@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta name="description"
+    content="Himanshu Singh – AI/ML Engineer & B.Tech CSE (AI & ML) student passionate about Machine Learning, Deep Learning, Generative AI, and building intelligent solutions." />
+  <meta name="keywords"
+    content="Himanshu Singh, AI ML Engineer, Machine Learning, Deep Learning, Generative AI, Portfolio, Python Developer" />
+  <meta name="author" content="Himanshu Singh" />
+  <meta property="og:title" content="Himanshu Singh | AI/ML Engineer Portfolio" />
+  <meta property="og:description"
+    content="Building intelligent solutions with Artificial Intelligence and Machine Learning." />
+  <meta property="og:type" content="website" />
+  <title>Himanshu Singh | AI/ML Engineer Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Fira+Code:wght@300;400;500&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+
+  <!-- Particle Canvas Background -->
+  <canvas id="particle-canvas"></canvas>
+
+  <!-- Loading Screen -->
+  <div id="loader" class="loader">
+    <div class="loader-grid"></div>
+
+    <!-- Tech HUD widgets on Left -->
+    <div class="loader-terminal left-terminal" id="left-terminal">
+      <div class="hud-widget">
+        <div class="hud-header">[SYSTEM DIAGNOSTICS]</div>
+        <div class="hud-bar-row">
+          <span>CPU LOAD</span>
+          <div class="hud-bar-container">
+            <div class="hud-bar-fill" id="cpu-bar" style="width: 45%;"></div>
+          </div>
+          <span id="cpu-val">45%</span>
+        </div>
+        <div class="hud-bar-row">
+          <span>RAM SYS</span>
+          <div class="hud-bar-container">
+            <div class="hud-bar-fill" id="ram-bar" style="width: 78%;"></div>
+          </div>
+          <span id="ram-val">78%</span>
+        </div>
+        <div class="hud-bar-row">
+          <span>GPU Core</span>
+          <div class="hud-bar-container">
+            <div class="hud-bar-fill" id="gpu-bar" style="width: 62%;"></div>
+          </div>
+          <span id="gpu-val">62%</span>
+        </div>
+      </div>
+      <div class="hud-divider"></div>
+      <div class="logs-stream" id="left-logs-stream"></div>
+    </div>
+
+    <!-- Tech HUD widgets on Right -->
+    <div class="loader-terminal right-terminal" id="right-terminal">
+      <div class="hud-widget">
+        <div class="hud-header">[OPTIMIZATION WAVE]</div>
+        <canvas id="oscilloscope" width="220" height="70"></canvas>
+      </div>
+      <div class="hud-divider"></div>
+      <div class="logs-stream" id="right-logs-stream"></div>
+    </div>
+
+    <div class="loader-content">
+      <div class="loader-logo">
+        <div class="loader-ring-outer"></div>
+        <div class="loader-ring-inner"></div>
+        <div class="loader-hud-ticks"></div>
+        <img src="assets/images/logo.png" alt="Himanshu Singh Logo" class="logo-img" />
+      </div>
+      <div class="loader-bar">
+        <div class="loader-fill"></div>
+      </div>
+      <p class="loader-text" id="loader-text">Initializing Portfolio...</p>
+
+      <!-- Mobile-only inline HUD panel -->
+      <div class="loader-mobile-hud">
+        <div class="loader-mobile-hud-top">
+          <div class="loader-mobile-metrics">
+            <div class="loader-mobile-metric-header">[SYSTEM DIAGNOSTICS]</div>
+            <div class="hud-bar-row">
+              <span>CPU</span>
+              <div class="hud-bar-container"><div class="hud-bar-fill" id="cpu-bar-m" style="width:45%"></div></div>
+              <span id="cpu-val-m">45%</span>
+            </div>
+            <div class="hud-bar-row">
+              <span>RAM</span>
+              <div class="hud-bar-container"><div class="hud-bar-fill" id="ram-bar-m" style="width:78%"></div></div>
+              <span id="ram-val-m">78%</span>
+            </div>
+            <div class="hud-bar-row">
+              <span>GPU</span>
+              <div class="hud-bar-container"><div class="hud-bar-fill" id="gpu-bar-m" style="width:62%"></div></div>
+              <span id="gpu-val-m">62%</span>
+            </div>
+          </div>
+          <div class="loader-mobile-osc">
+            <div class="loader-mobile-metric-header">[WAVE]</div>
+            <canvas id="oscilloscope-m" width="140" height="50"></canvas>
+          </div>
+        </div>
+        <div class="loader-mobile-logs" id="mobile-logs-stream"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav id="navbar" class="navbar">
+    <div class="nav-container">
+      <a href="#home" class="nav-logo">
+        <img src="assets/images/logo.png" alt="Himanshu Singh Logo" class="logo-img" />
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#home" class="nav-link active" data-section="home">Home</a></li>
+        <li><a href="#about" class="nav-link" data-section="about">About</a></li>
+        <li><a href="#skills" class="nav-link" data-section="skills">Skills</a></li>
+        <li><a href="#services" class="nav-link" data-section="services">What I Do</a></li>
+        <li><a href="#experience" class="nav-link" data-section="experience">Experience</a></li>
+        <li><a href="#projects" class="nav-link" data-section="projects">Projects</a></li>
+        <li><a href="#certifications" class="nav-link" data-section="certifications">Certifications</a></li>
+        <li><a href="#contact" class="nav-link" data-section="contact">Contact</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="Toggle Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ===== HERO SECTION ===== -->
+  <section id="home" class="hero">
+    <div class="hero-bg-grid"></div>
+    <div class="hero-glow hero-glow-1"></div>
+    <div class="hero-glow hero-glow-2"></div>
+    <div class="hero-container">
+      <div class="hero-content" data-aos="fade-right">
+        <div class="hero-badge">
+          <span class="badge-dot"></span>
+          <span>Available for Opportunities</span>
+        </div>
+        <h1 class="hero-name">
+          <span class="name-hi">Hi, I'm</span>
+          <span class="name-main">Himanshu Singh</span>
+        </h1>
+        <div class="hero-title-wrap">
+          <span class="hero-title-prefix">I'm </span>
+          <span class="typed-text" id="typed-text"></span>
+          <span class="typed-cursor">|</span>
+        </div>
+        <p class="hero-tagline">
+          Building intelligent solutions with <span class="highlight">Artificial Intelligence</span> and <span
+            class="highlight">Machine Learning.</span>
+        </p>
+        <div class="hero-cta">
+          <a href="#projects" class="btn btn-primary" id="hero-view-projects">
+            <i class="fas fa-rocket"></i> View Projects
+          </a>
+          <a href="#contact" class="btn btn-outline" id="hero-contact">
+            <i class="fas fa-paper-plane"></i> Contact Me
+          </a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-item">
+            <span class="stat-num">5+</span>
+            <span class="stat-label">Projects</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-num">10+</span>
+            <span class="stat-label">Certifications</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-item">
+            <span class="stat-num"><i class="fa-solid fa-basketball"></i></span>
+            <span class="stat-label">National Player</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual" data-aos="fade-left">
+        <div class="profile-wrapper">
+          <div class="profile-ring-outer"></div>
+          <div class="profile-ring-inner"></div>
+          <div class="profile-ring-hud"></div>
+          <div class="profile-img-container">
+            <img src="assets/images/profile.png" alt="Himanshu Singh - AI/ML Engineer" class="profile-img" />
+            <div class="profile-scanner"></div>
+            <div class="profile-grid-overlay"></div>
+          </div>
+          <div class="profile-badge profile-badge-1">
+            <i class="fab fa-python"></i>
+            <span>Python</span>
+          </div>
+          <div class="profile-badge profile-badge-2">
+            <i class="fas fa-brain"></i>
+            <span>AI/ML</span>
+          </div>
+          <div class="profile-badge profile-badge-3">
+            <i class="fas fa-network-wired"></i>
+            <span>Deep Learning</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-indicator" id="scroll-indicator">
+      <div class="scroll-mouse">
+        <div class="scroll-wheel"></div>
+      </div>
+      <span>Scroll Down</span>
+    </div>
+  </section>
+
+  <!-- ===== ABOUT SECTION ===== -->
+  <section id="about" class="section about-section">
+    <div class="container">
+      <div class="section-header" data-aos="fade-up">
+        <span class="section-tag">Get to know me</span>
+        <h2 class="section-title">About <span class="gradient-text">Me</span></h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="about-grid">
+        <div class="about-image-side" data-aos="fade-right">
+          <div class="about-img-wrapper">
+            <img src="assets/images/profile.png" alt="Himanshu Singh" class="about-img" />
+            <div class="about-img-glow"></div>
+          </div>
+          <div class="about-info-cards">
+            <div class="info-card glass-card">
+              <i class="fas fa-graduation-cap"></i>
+              <div>
+                <strong>B.Tech CSE (AI & ML)</strong>
+                <span>3rd Year Student</span>
+              </div>
+            </div>
+            <div class="info-card glass-card">
+              <i class="fas fa-basketball-ball"></i>
+              <div>
+                <strong>Indo-Nepal Championship</strong>
+                <span>Represented India 🇮🇳</span>
+              </div>
+            </div>
+            <div class="info-card glass-card">
+              <i class="fas fa-trophy"></i>
+              <div>
+                <strong>CATALYST President</strong>
+                <span>Career Services Club</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="about-text-side" data-aos="fade-left">
+          <h3 class="about-greeting">Hello! I'm <span class="gradient-text">Himanshu Singh</span></h3>
+          <p class="about-description">
+            I'm a third-year <strong>B.Tech Computer Science & Engineering (AI & ML)</strong> student passionate about
+            <strong>Artificial Intelligence, Machine Learning, Deep Learning,</strong> and <strong>Generative
+              AI</strong>. I enjoy building intelligent solutions that solve real-world problems through technology and
+            innovation.
+          </p>
+          <p class="about-description">
+            Alongside my technical journey, I have proudly <strong>represented India at the Indo-Nepal International
+              Basketball Championship</strong>, which has strengthened my leadership, teamwork, and resilience —
+            qualities I bring to every project and collaboration.
+          </p>
+          <div class="about-highlights">
+            <div class="highlight-item">
+              <i class="fas fa-check-circle"></i>
+              <span>Machine Learning & Deep Learning enthusiast</span>
+            </div>
+            <div class="highlight-item">
+              <i class="fas fa-check-circle"></i>
+              <span>Generative AI & LLM researcher</span>
+            </div>
+            <div class="highlight-item">
+              <i class="fas fa-check-circle"></i>
+              <span>President of CATALYST Career Club</span>
+            </div>
+            <div class="highlight-item">
+              <i class="fas fa-check-circle"></i>
+              <span>International Basketball player for India</span>
+            </div>
+          </div>
+          <div class="about-cta">
+            <a href="#contact" class="btn btn-primary" id="about-hire-btn">
+              <i class="fas fa-handshake"></i> Hire Me
+            </a>
+            <a href="./assets/Himanshu_Singh_Resume.pdf" class="btn btn-outline" id="about-resume-btn"
+              target="_blank" rel="noopener noreferrer">
+              <i class="fas fa-download"></i> Download CV
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SKILLS SECTION ===== -->
+  <section id="skills" class="section skills-section">
+    <div class="container">
+      <div class="section-header" data-aos="fade-up">
+        <span class="section-tag">My Expertise</span>
+        <h2 class="section-title">Technical <span class="gradient-text">Skills</span></h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="skills-grid" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="skill-card glass-card" data-skill="70">
+          <div class="skill-icon-wrap" style="--skill-color: #3776ab;">
+            <i class="fab fa-python"></i>
+          </div>
+          <div class="skill-info">
+            <span class="skill-name">Python</span>
+            <div class="skill-bar-container">
+              <div class="skill-bar" data-width="70" style="--skill-color: #3776ab;"></div>
+            </div>
+            <span class="skill-percent">70%</span>
+          </div>
+        </div>
+
+        <div class="skill-card glass-card" data-skill="68">
+          <div class="skill-icon-wrap" style="--skill-color: #ff6f00;">
+            <i class="fas fa-robot"></i>
+          </div>
+          <div class="skill-info">
+            <span class="skill-name">Machine Learning</span>
+            <div class="skill-bar-container">
+              <div class="skill-bar" data-width="68" style="--skill-color: #ff6f00;"></div>
+            </div>
+            <span class="skill-percent">68%</span>
+          </div>
+        </div>
+
+        <div class="skill-card glass-card" data-skill="65">
+          <div class="skill-icon-wrap" style="--skill-color: #7c4dff;">
+            <i class="fas fa-brain"></i>
+          </div>
+          <div class="skill-info">
+            <span class="skill-name">Deep Learning</span>
+            <div class="skill-bar-container">
+              <div class="skill-bar" data-width="65" style="--skill-color: #7c4dff;"></div>
+            </div>
+            <span class="skill-percent">65%</span>
+          </div>
+        </div>
+
+        <div class="skill-card glass-card" data-skill="62">
+          <div class="skill-icon-wrap" style="--skill-color: #00b4d8;">
+            <i class="fas fa-chart-bar"></i>
+          </div>
+          <div class="skill-info">
+            <span class="skill-name">Data Analysis</span>
+            <div class="skill-bar-container">
+              <div class="skill-bar" data-width="62" style="--skill-color: #00b4d8;"></div>
+            </div>
+            <span class="skill-percent">62%</span>
+          </div>
+        </div>
+
+        <div class="skill-card glass-card" data-skill="60">
+          <div class="skill-icon-wrap" style="--skill-color: #a855f7;">
+            <i class="fas fa-magic"></i>
+          </div>
+          <div class="skill-info">
+            <span class="skill-name">Generative AI</span>
+            <div class="skill-bar-container">
+              <div class="skill-bar" data-width="60" style="--skill-color: #a855f7;"></div>
+            </div>
+            <span class="skill-percent">60%</span>
+          </div>
+        </div>
+
+        <div class="skill-card glass-card" data-skill="58">
+          <div class="skill-icon-wrap" style="--skill-color: #336791;">
+            <i class="fas fa-database"></i>
+          </div>
+          <div class="skill-info">
+            <span class="skill-name">SQL</span>
+            <div class="skill-bar-container">
+              <div class="skill-bar" data-width="58" style="--skill-color: #336791;"></div>
+            </div>
+            <span class="skill-percent">58%</span>
+          </div>
+        </div>
+
+        <div class="skill-card glass-card" data-skill="55">
+          <div class="skill-icon-wrap" style="--skill-color: #e76f51;">
+            <i class="fab fa-java"></i>
+          </div>
+          <div class="skill-info">
+            <span class="skill-name">Java</span>
+            <div class="skill-bar-container">
+              <div class="skill-bar" data-width="55" style="--skill-color: #e76f51;"></div>
+            </div>
+            <span class="skill-percent">55%</span>
+          </div>
+        </div>
+
+        <div class="skill-card glass-card" data-skill="60">
+          <div class="skill-icon-wrap" style="--skill-color: #f05032;">
+            <i class="fab fa-git-alt"></i>
+          </div>
+          <div class="skill-info">
+            <span class="skill-name">Git & GitHub</span>
+            <div class="skill-bar-container">
+              <div class="skill-bar" data-width="60" style="--skill-color: #f05032;"></div>
+            </div>
+            <span class="skill-percent">60%</span>
+          </div>
+        </div>
+
+        <div class="skill-card glass-card" data-skill="50">
+          <div class="skill-icon-wrap" style="--skill-color: #e34f26;">
+            <i class="fab fa-html5"></i>
+          </div>
+          <div class="skill-info">
+            <span class="skill-name">HTML / CSS</span>
+            <div class="skill-bar-container">
+              <div class="skill-bar" data-width="50" style="--skill-color: #e34f26;"></div>
+            </div>
+            <span class="skill-percent">50%</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== WHAT I DO SECTION ===== -->
+  <section id="services" class="section services-section">
+    <div class="container">
+      <div class="section-header" data-aos="fade-up">
+        <span class="section-tag">My Strengths</span>
+        <h2 class="section-title">What I <span class="gradient-text">Do</span></h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="services-grid">
+        <div class="service-card glass-card" data-aos="fade-up" data-aos-delay="100">
+          <div class="service-icon-wrap">
+            <div class="service-icon">
+              <i class="fas fa-brain"></i>
+            </div>
+            <div class="service-icon-glow"></div>
+          </div>
+          <h3 class="service-title">AI & Machine Learning</h3>
+          <p class="service-description">
+            Building intelligent solutions using Machine Learning, Deep Learning, and Data Science to solve real-world
+            challenges. From data preprocessing to model deployment.
+          </p>
+          <ul class="service-list">
+            <li><i class="fas fa-chevron-right"></i> Predictive Modeling</li>
+            <li><i class="fas fa-chevron-right"></i> Neural Networks</li>
+            <li><i class="fas fa-chevron-right"></i> NLP Systems</li>
+          </ul>
+        </div>
+
+        <div class="service-card glass-card" data-aos="fade-up" data-aos-delay="200">
+          <div class="service-icon-wrap">
+            <div class="service-icon" style="--service-color: hsl(190, 90%, 50%);">
+              <i class="fas fa-code"></i>
+            </div>
+            <div class="service-icon-glow" style="--service-color: hsl(190, 90%, 50%);"></div>
+          </div>
+          <h3 class="service-title">Development using AI</h3>
+          <p class="service-description">
+            Developing responsive applications and AI-powered projects with a focus on performance, usability, and
+            innovation. Turning complex ideas into elegant solutions.
+          </p>
+          <ul class="service-list">
+            <li><i class="fas fa-chevron-right"></i> AI-Powered Apps</li>
+            <li><i class="fas fa-chevron-right"></i> Web Development Using AI</li>
+            <li><i class="fas fa-chevron-right"></i> Data Pipelines</li>
+          </ul>
+        </div>
+
+        <div class="service-card glass-card" data-aos="fade-up" data-aos-delay="300">
+          <div class="service-icon-wrap">
+            <div class="service-icon" style="--service-color: hsl(270, 90%, 60%);">
+              <i class="fas fa-rocket"></i>
+            </div>
+            <div class="service-icon-glow" style="--service-color: hsl(270, 90%, 60%);"></div>
+          </div>
+          <h3 class="service-title">Continuous Learning</h3>
+          <p class="service-description">
+            Exploring emerging technologies in AI, Generative AI, and software development through hands-on projects,
+            research, and certifications.
+          </p>
+          <ul class="service-list">
+            <li><i class="fas fa-chevron-right"></i> Generative AI & LLMs</li>
+            <li><i class="fas fa-chevron-right"></i> Research & Innovation</li>
+            <li><i class="fas fa-chevron-right"></i> Open Source Contributions</li>
+          </ul>
+        </div>
+
+        <div class="service-card glass-card" data-aos="fade-up" data-aos-delay="400">
+          <div class="service-icon-wrap">
+            <div class="service-icon" style="--service-color: hsl(45, 95%, 55%);">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="service-icon-glow" style="--service-color: hsl(45, 95%, 55%);"></div>
+          </div>
+          <h3 class="service-title">Leadership Experience</h3>
+          <p class="service-description">
+            As President of CATALYST – Career Services & Development Centre, I lead career-focused initiatives,
+            workshops, and student engagement activities bridging academics and industry.
+          </p>
+          <ul class="service-list">
+            <li><i class="fas fa-chevron-right"></i> Team Management</li>
+            <li><i class="fas fa-chevron-right"></i> Workshop Organization</li>
+            <li><i class="fas fa-chevron-right"></i> Industry Networking</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== EXPERIENCE SECTION ===== -->
+  <section id="experience" class="section experience-section">
+    <div class="container">
+      <div class="section-header" data-aos="fade-up">
+        <span class="section-tag">My Journey</span>
+        <h2 class="section-title">Work & <span class="gradient-text">Leadership</span> Experience</h2>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="experience-grid">
+        <!-- Professional Internships -->
+        <div class="xp-column" data-aos="fade-right">
+          <h3 class="xp-column-title"><i class="fas fa-briefcase"></i> Internships</h3>
+          <div class="xp-timeline">
+
+            <!-- Penthara Technologies -->
+            <div class="xp-item">
+              <div class="xp-dot" style="--dot-color: #f7971e;"></div>
+              <div class="xp-card glass-card">
+                <div class="xp-header">
+                  <h4 class="xp-title">Campus Ambassador</h4>
+                  <span class="xp-company">Penthara Technologies</span>
+                </div>
+                <div class="xp-meta">
+                  <span><i class="far fa-calendar-alt"></i> Oct 2024 - Dec 2024</span>
+                  <span><i class="fas fa-map-marker-alt"></i> India · On-site</span>
+                </div>
+                <div class="xp-skills">
+                  <span class="xp-skill-tag">Public Relations</span>
+                  <span class="xp-skill-tag">Communication</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- SystemTron -->
+            <div class="xp-item">
+              <div class="xp-dot" style="--dot-color: #a855f7;"></div>
+              <div class="xp-card glass-card">
+                <div class="xp-header">
+                  <h4 class="xp-title">Generative AI Engineer</h4>
+                  <span class="xp-company">SystemTron</span>
+                </div>
+                <div class="xp-meta">
+                  <span><i class="far fa-calendar-alt"></i> Jul 2024 - Aug 2024</span>
+                  <span><i class="fas fa-map-marker-alt"></i> India · Remote</span>
+                </div>
+                <div class="xp-skills">
+                  <span class="xp-skill-tag">Generative AI</span>
+                  <span class="xp-skill-tag">Artificial Intelligence</span>
+                  <span class="xp-skill-tag">Large Language Models</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- InternPe -->
+            <div class="xp-item">
+              <div class="xp-dot" style="--dot-color: #00c8dc;"></div>
+              <div class="xp-card glass-card">
+                <div class="xp-header">
+                  <h4 class="xp-title">AI/ML Intern</h4>
+                  <span class="xp-company">InternPe</span>
+                </div>
+                <div class="xp-meta">
+                  <span><i class="far fa-calendar-alt"></i> Jul 2024 - Aug 2024</span>
+                  <span><i class="fas fa-map-marker-alt"></i> India · Remote</span>
+                </div>
+                <div class="xp-skills">
+                  <span class="xp-skill-tag">AI</span>
+                  <span class="xp-skill-tag">Machine Learning</span>
+                  <span class="xp-skill-tag">Python</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- CipherByte Technologies (hidden by default) -->
+            <div class="xp-item xp-item-extra">
+              <div class="xp-dot" style="--dot-color: #ff9f43;"></div>
+              <div class="xp-card glass-card">
+                <div class="xp-header">
+                  <h4 class="xp-title">AI/ML Intern</h4>
+                  <span class="xp-company">CipherByte Technologies</span>
+                </div>
+                <div class="xp-meta">
+                  <span><i class="far fa-calendar-alt"></i> Jun 2024 - Jul 2024</span>
+                  <span><i class="fas fa-map-marker-alt"></i> India · Remote</span>
+                </div>
+                <div class="xp-skills">
+                  <span class="xp-skill-tag">AI</span>
+                  <span class="xp-skill-tag">Machine Learning</span>
+                  <span class="xp-skill-tag">Data Analysis</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <button class="timeline-toggle-btn" id="xp-toggle-btn" onclick="toggleTimeline('xp')">
+            <i class="fas fa-chevron-down" id="xp-toggle-icon"></i>
+            <span id="xp-toggle-text">View 1 More</span>
+          </button>
+        </div>
+
+        <!-- Leadership & Community Experience -->
+        <div class="xp-column" data-aos="fade-left">
+          <h3 class="xp-column-title"><i class="fas fa-users-cog"></i> Leadership & Community</h3>
+          <div class="xp-timeline">
+
+            <!-- CATALYST -->
+            <div class="xp-item">
+              <div class="xp-dot" style="--dot-color: #00b09b;"></div>
+              <div class="xp-card glass-card">
+                <div class="xp-header">
+                  <h4 class="xp-title">President</h4>
+                  <span class="xp-company">CATALYST - Career Services & Development Centre</span>
+                </div>
+                <div class="xp-meta">
+                  <span><i class="far fa-calendar-alt"></i> Jan 2025 - Present</span>
+                  <span><i class="fas fa-map-marker-alt"></i> India · Hybrid</span>
+                </div>
+                <div class="xp-skills">
+                  <span class="xp-skill-tag">Communication</span>
+                  <span class="xp-skill-tag">Management</span>
+                  <span class="xp-skill-tag">Leadership</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- NSS -->
+            <div class="xp-item">
+              <div class="xp-dot" style="--dot-color: #7c3aed;"></div>
+              <div class="xp-card glass-card">
+                <div class="xp-header">
+                  <h4 class="xp-title">Member</h4>
+                  <span class="xp-company">National Service Scheme (NSS)</span>
+                </div>
+                <div class="xp-meta">
+                  <span><i class="far fa-calendar-alt"></i> Aug 2023 - Present</span>
+                  <span><i class="fas fa-map-marker-alt"></i> India</span>
+                </div>
+                <div class="xp-skills">
+                  <span class="xp-skill-tag">Public Relations</span>
+                  <span class="xp-skill-tag">Communication</span>
+                  <span class="xp-skill-tag">Social Service</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- NCC -->
+            <div class="xp-item">
+              <div class="xp-dot" style="--dot-color: #ff4081;"></div>
+              <div class="xp-card glass-card">
+                <div class="xp-header">
+                  <h4 class="xp-title">Cadet</h4>
+                  <span class="xp-company">NATIONAL CADET CORPS (NCC) - India</span>
+                </div>
+                <div class="xp-meta">
+                  <span><i class="far fa-calendar-alt"></i> Aug 2023 - Present</span>
+                  <span><i class="fas fa-map-marker-alt"></i> India</span>
+                </div>
+                <div class="xp-skills">
+                  <span class="xp-skill-tag">Leadership</span>
+                  <span class="xp-skill-tag">Teamwork</span>
+                  <span class="xp-skill-tag">Discipline</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PROJECTS SECTION ===== -->
+  <section id="projects" class="section projects-section">
+    <div class="container">
+      <div class="section-header" data-aos="fade-up">
+        <span class="section-tag">My Work</span>
+        <h2 class="section-title">Featured <span class="gradient-text">Projects</span></h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="projects-grid">
+
+        <div class="project-card glass-card" data-aos="fade-up" data-aos-delay="100">
+          <div class="project-bg-icon"><i class="fa-solid fa-robot"></i></div>
+          <div class="project-content">
+            <div class="project-content-header">
+              <span class="project-badge">AI Assistant</span>
+              <div class="project-card-links">
+                <a href="https://github.com/Himanshu-Singh11" target="_blank" rel="noopener noreferrer"
+                  class="project-card-link-icon" id="jarvis-github" title="View Source Code">
+                  <i class="fab fa-github"></i><span>GitHub</span>
+                </a>
+                <a href="#contact" class="project-card-link-icon project-link-demo" id="jarvis-demo" title="Live Demo">
+                  <i class="fas fa-external-link-alt"></i><span>Live Demo</span>
+                </a>
+              </div>
+            </div>
+            <h3 class="project-title">Jarvis AI Virtual Assistant</h3>
+            <p class="project-description">
+              An intelligent voice-powered AI assistant capable of answering questions, setting reminders, playing
+              music, and performing system commands using NLP and speech recognition.
+            </p>
+            <div class="project-tech">
+              <span class="tech-tag">Python</span>
+              <span class="tech-tag">NLP</span>
+              <span class="tech-tag">Speech API</span>
+              <span class="tech-tag">OpenAI</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card glass-card" data-aos="fade-up" data-aos-delay="150">
+          <div class="project-bg-icon" style="--bg-icon-color: #00b09b;"><i class="fa-solid fa-stethoscope"></i></div>
+          <div class="project-content">
+            <div class="project-content-header">
+              <span class="project-badge" style="background: linear-gradient(135deg, #00b09b, #96c93d);">Healthcare
+                AI</span>
+              <div class="project-card-links">
+                <a href="https://github.com/Himanshu-Singh11" target="_blank" rel="noopener noreferrer"
+                  class="project-card-link-icon" id="diabetes-github" title="View Source Code">
+                  <i class="fab fa-github"></i><span>GitHub</span>
+                </a>
+                <a href="#contact" class="project-card-link-icon project-link-demo" id="diabetes-demo" title="Live Demo">
+                  <i class="fas fa-external-link-alt"></i><span>Live Demo</span>
+                </a>
+              </div>
+            </div>
+            <h3 class="project-title">Diabetes Prediction System</h3>
+            <p class="project-description">
+              Predictive healthcare system using Random Forest and Logistic Regression to assess diabetes risk based on
+              patient metrics, achieved good accuracy.
+            </p>
+            <div class="project-tech">
+              <span class="tech-tag">Python</span>
+              <span class="tech-tag">Random Forest</span>
+              <span class="tech-tag">Streamlit</span>
+              <span class="tech-tag">NumPy</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card glass-card" data-aos="fade-up" data-aos-delay="200">
+          <div class="project-bg-icon" style="--bg-icon-color: #ff4081;"><i class="fa-solid fa-heart-pulse"></i></div>
+          <div class="project-content">
+            <div class="project-content-header">
+              <span class="project-badge" style="background: linear-gradient(135deg, #e91e8c, #ff4081);">Healthcare
+                AI</span>
+              <div class="project-card-links">
+                <a href="https://github.com/Himanshu-Singh11" target="_blank" rel="noopener noreferrer"
+                  class="project-card-link-icon" id="cancer-github" title="View Source Code">
+                  <i class="fab fa-github"></i><span>GitHub</span>
+                </a>
+                <a href="#contact" class="project-card-link-icon project-link-demo" id="cancer-demo" title="Live Demo">
+                  <i class="fas fa-external-link-alt"></i><span>Live Demo</span>
+                </a>
+              </div>
+            </div>
+            <h3 class="project-title">Breast Cancer Detection</h3>
+            <p class="project-description">
+              ML-powered diagnostic tool using classification algorithms to detect malignant vs. benign breast cancer
+              cases, achieved good accuracy using the Wisconsin dataset.
+            </p>
+            <div class="project-tech">
+              <span class="tech-tag">Python</span>
+              <span class="tech-tag">Scikit-Learn</span>
+              <span class="tech-tag">SVM</span>
+              <span class="tech-tag">Pandas</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card glass-card" data-aos="fade-up" data-aos-delay="250">
+          <div class="project-bg-icon" style="--bg-icon-color: #f7971e;"><i class="fa-solid fa-clapperboard"></i></div>
+          <div class="project-content">
+            <div class="project-content-header">
+              <span class="project-badge" style="background: linear-gradient(135deg, #f7971e, #ffd200);">Entertainment
+                ML</span>
+              <div class="project-card-links">
+                <a href="https://github.com/Himanshu-Singh11" target="_blank" rel="noopener noreferrer"
+                  class="project-card-link-icon" id="movie-github" title="View Source Code">
+                  <i class="fab fa-github"></i><span>GitHub</span>
+                </a>
+                <a href="#contact" class="project-card-link-icon project-link-demo" id="movie-demo" title="Live Demo">
+                  <i class="fas fa-external-link-alt"></i><span>Live Demo</span>
+                </a>
+              </div>
+            </div>
+            <h3 class="project-title">Movie Rating Prediction</h3>
+            <p class="project-description">
+              ML model predicting movie ratings based on genre, cast, director, and budget using regression techniques,
+              achieved good accuracy.
+            </p>
+            <div class="project-tech">
+              <span class="tech-tag">Python</span>
+              <span class="tech-tag">XGBoost</span>
+              <span class="tech-tag">Matplotlib</span>
+              <span class="tech-tag">Feature Eng.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-card glass-card" data-aos="fade-up" data-aos-delay="300">
+          <div class="project-bg-icon" style="--bg-icon-color: #1a73e8;"><i class="fa-solid fa-chart-line"></i></div>
+          <div class="project-content">
+            <div class="project-content-header">
+              <span class="project-badge" style="background: linear-gradient(135deg, #1a73e8, #ff6d00);">Sports
+                Analytics</span>
+              <div class="project-card-links">
+                <a href="https://github.com/Himanshu-Singh11" target="_blank" rel="noopener noreferrer"
+                  class="project-card-link-icon" id="ipl-github" title="View Source Code">
+                  <i class="fab fa-github"></i><span>GitHub</span>
+                </a>
+                <a href="#contact" class="project-card-link-icon project-link-demo" id="ipl-demo" title="Live Demo">
+                  <i class="fas fa-external-link-alt"></i><span>Live Demo</span>
+                </a>
+              </div>
+            </div>
+            <h3 class="project-title">IPL Win Prediction</h3>
+            <p class="project-description">
+              Real-time IPL match outcome predictor analyzing team stats, pitch conditions, and player form using
+              logistic regression and ensemble methods.
+            </p>
+            <div class="project-tech">
+              <span class="tech-tag">Python</span>
+              <span class="tech-tag">Logistic Reg.</span>
+              <span class="tech-tag">Seaborn</span>
+              <span class="tech-tag">Pandas</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CERTIFICATIONS SECTION ===== -->
+  <section id="certifications" class="section certs-section">
+    <div class="container">
+      <div class="section-header" data-aos="fade-up">
+        <span class="section-tag">Credentials</span>
+        <h2 class="section-title">Certifications & <span class="gradient-text">Achievements</span></h2>
+        <div class="section-line"></div>
+      </div>
+
+      <div class="certs-achievements-grid">
+        <!-- Certifications Column -->
+        <div class="certs-column" data-aos="fade-right">
+          <h3 class="col-title"><i class="fas fa-certificate"></i> Certifications</h3>
+          <div class="cert-timeline-wrapper" id="cert-timeline-wrapper">
+            <div class="cert-timeline">
+
+              <!-- Google AI Essentials -->
+              <div class="cert-item">
+                <div class="cert-dot" style="--dot-color: #f72585;"></div>
+                <div class="cert-card glass-card">
+                  <div class="cert-icon" style="--cert-color: #f72585;"><i class="fab fa-google"></i></div>
+                  <div class="cert-details">
+                    <h4>Google AI Essentials</h4>
+                    <span class="cert-issuer"><i class="fas fa-building"></i> Google</span>
+                    <span class="cert-badge">Verified</span>
+                    <span class="cert-id">ID: JYBUJJ4MO229</span>
+                    <a href="https://coursera.org/verify/JYBUJJ4MO229" target="_blank" rel="noopener noreferrer"
+                      class="cert-link"><i class="fas fa-external-link-alt"></i> View Credentials</a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Oracle -->
+              <div class="cert-item">
+                <div class="cert-dot" style="--dot-color: #f7971e;"></div>
+                <div class="cert-card glass-card">
+                  <div class="cert-icon" style="--cert-color: #f7971e;"><i class="fas fa-cloud"></i></div>
+                  <div class="cert-details">
+                    <h4>Certified AI Foundations Associate</h4>
+                    <span class="cert-issuer"><i class="fas fa-building"></i> Oracle</span>
+                    <span class="cert-badge" style="background: rgba(247,151,30,0.12); color: #f7971e;">Associate</span>
+                    <span class="cert-id">ID: 102390383OCI25AICFA</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- IBM -->
+              <div class="cert-item">
+                <div class="cert-dot" style="--dot-color: #06d6a0;"></div>
+                <div class="cert-card glass-card">
+                  <div class="cert-icon" style="--cert-color: #06d6a0;"><i class="fas fa-robot"></i></div>
+                  <div class="cert-details">
+                    <h4>Generative AI: Prompt Engineering Basics</h4>
+                    <span class="cert-issuer"><i class="fas fa-building"></i> IBM</span>
+                    <span class="cert-badge" style="background: rgba(6,214,160,0.12); color: #06d6a0;">Completed</span>
+                    <span class="cert-id">ID: 4ZWZQJ6TITE9</span>
+                    <a href="https://www.coursera.org/account/accomplishments/records/4ZWZQJ6TITE9" target="_blank"
+                      rel="noopener noreferrer" class="cert-link"><i class="fas fa-external-link-alt"></i> View
+                      Credentials</a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- AWS -->
+              <div class="cert-item">
+                <div class="cert-dot" style="--dot-color: #ffd200;"></div>
+                <div class="cert-card glass-card">
+                  <div class="cert-icon" style="--cert-color: #ffd200;"><i class="fab fa-aws"></i></div>
+                  <div class="cert-details">
+                    <h4>Solutions Architect Virtual Experience</h4>
+                    <span class="cert-issuer"><i class="fas fa-building"></i> Amazon Web Services (AWS)</span>
+                    <span class="cert-badge" style="background: rgba(255,210,0,0.12); color: #ffd200;">Completed</span>
+                    <span class="cert-id">ID: F7N3AzzcN9PvhFT9j</span>
+                    <a href="https://forage-uploads-prod.s3.amazonaws.com/completion-certificates/pmnMSL4QiQ9JCgE3W/kkE9HyeNcw6rwCRGw_pmnMSL4QiQ9JCgE3W_TqrrrnzYfz2vH5aRJ_1749926408528_completion_certificate.pdf"
+                      target="_blank" rel="noopener noreferrer" class="cert-link"><i
+                        class="fas fa-external-link-alt"></i> View Credentials</a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- HCL GUVI (hidden by default) -->
+              <div class="cert-item cert-item-extra">
+                <div class="cert-dot" style="--dot-color: #4ea8de;"></div>
+                <div class="cert-card glass-card">
+                  <div class="cert-icon" style="--cert-color: #4ea8de;"><i class="fas fa-comments"></i></div>
+                  <div class="cert-details">
+                    <h4>ChatGPT for Everyone</h4>
+                    <span class="cert-issuer"><i class="fas fa-building"></i> HCL GUVI</span>
+                    <span class="cert-badge" style="background: rgba(78,168,222,0.12); color: #4ea8de;">Completed</span>
+                    <span class="cert-id">ID: 61933DCz7PVr4T651x</span>
+                    <a href="https://www.guvi.in/certificate?id=61933DCz7PVr4T651x" target="_blank"
+                      rel="noopener noreferrer" class="cert-link"><i class="fas fa-external-link-alt"></i> View
+                      Credentials</a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Google Python (hidden by default) -->
+              <div class="cert-item cert-item-extra">
+                <div class="cert-dot" style="--dot-color: #7209b7;"></div>
+                <div class="cert-card glass-card">
+                  <div class="cert-icon" style="--cert-color: #7209b7;"><i class="fab fa-python"></i></div>
+                  <div class="cert-details">
+                    <h4>Crash Course on Python</h4>
+                    <span class="cert-issuer"><i class="fas fa-building"></i> Google</span>
+                    <span class="cert-badge" style="background: rgba(114,9,183,0.12); color: #7209b7;">Verified</span>
+                    <span class="cert-id">ID: Q6DV0382QBBF</span>
+                    <a href="https://www.coursera.org/account/accomplishments/records/Q6DV0382QBBF" target="_blank"
+                      rel="noopener noreferrer" class="cert-link"><i class="fas fa-external-link-alt"></i> View
+                      Credentials</a>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <button class="timeline-toggle-btn" id="cert-toggle-btn" onclick="toggleTimeline('cert')">
+              <i class="fas fa-chevron-down" id="cert-toggle-icon"></i>
+              <span id="cert-toggle-text">View 2 More</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Achievements Column -->
+        <div class="achievements-column" data-aos="fade-left">
+          <h3 class="col-title"><i class="fas fa-trophy"></i> Achievements</h3>
+          <div class="achievements-grid">
+
+            <div class="achievement-card glass-card">
+              <div class="achievement-icon"><i class="fa-solid fa-basketball" style="color: #ff9f43;"></i></div>
+              <div class="achievement-content">
+                <h4>Indo-Nepal Championship</h4>
+                <p>Represented India at the International Basketball Championship — a testament to leadership,
+                  discipline, and teamwork.</p>
+                <span class="achievement-tag">International</span>
+              </div>
+            </div>
+
+            <div class="achievement-card glass-card">
+              <div class="achievement-icon">👑</div>
+              <div class="achievement-content">
+                <h4>President – CATALYST Club</h4>
+                <p>Leading the Career Services & Development Centre with workshops and industry engagement programs for
+                  students.</p>
+                <span class="achievement-tag">Leadership</span>
+              </div>
+            </div>
+
+            <div class="achievement-card glass-card">
+              <div class="achievement-icon">🎓</div>
+              <div class="achievement-content">
+                <h4>Multiple AI/ML Internships</h4>
+                <p>Completed multiple internships in Artificial Intelligence and Machine Learning, gaining hands-on
+                  industry experience.</p>
+                <span class="achievement-tag">Industry</span>
+              </div>
+            </div>
+
+            <div class="achievement-card glass-card">
+              <div class="achievement-icon">💡</div>
+              <div class="achievement-content">
+                <h4>Active AI/ML Project Developer</h4>
+                <p>Continuously building and deploying AI/ML solutions that address real-world problems through
+                  innovative approaches.</p>
+                <span class="achievement-tag">Innovation</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CONTACT SECTION ===== -->
+  <section id="contact" class="section contact-section">
+    <div class="container">
+      <div class="section-header" data-aos="fade-up">
+        <span class="section-tag">Get In Touch</span>
+        <h2 class="section-title">Contact <span class="gradient-text">Me</span></h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="contact-grid">
+        <!-- Contact Info -->
+        <div class="contact-info" data-aos="fade-right">
+          <h3 class="contact-heading">Let's Build Something Amazing Together</h3>
+          <p class="contact-subtitle">
+            I'm always open to discussing AI/ML projects, collaborations, internships, and opportunities. Feel free to
+            reach out!
+          </p>
+          <div class="contact-links">
+            <a href="https://www.linkedin.com/in/himanshusingh-dehradun" target="_blank" rel="noopener noreferrer"
+              class="contact-link-card glass-card" id="linkedin-link">
+              <div class="contact-link-icon" style="--link-color: #0077b5;">
+                <i class="fab fa-linkedin-in"></i>
+              </div>
+              <div class="contact-link-text">
+                <span class="link-label">LinkedIn</span>
+                <span class="link-value">linkedin.com/in/himanshusingh-dehradun</span>
+              </div>
+              <i class="fas fa-arrow-right contact-arrow"></i>
+            </a>
+            <a href="https://github.com/Himanshu-Singh11" target="_blank" rel="noopener noreferrer"
+              class="contact-link-card glass-card" id="github-link">
+              <div class="contact-link-icon" style="--link-color: #6e5494;">
+                <i class="fab fa-github"></i>
+              </div>
+              <div class="contact-link-text">
+                <span class="link-label">GitHub</span>
+                <span class="link-value">github.com/Himanshu-Singh11</span>
+              </div>
+              <i class="fas fa-arrow-right contact-arrow"></i>
+            </a>
+            <a href="mailto:himanshujd.0011@gmail.com" class="contact-link-card glass-card" id="email-link">
+              <div class="contact-link-icon" style="--link-color: #ea4335;">
+                <i class="fas fa-envelope"></i>
+              </div>
+              <div class="contact-link-text">
+                <span class="link-label">Email</span>
+                <span class="link-value">himanshujd.0011@gmail.com</span>
+              </div>
+              <i class="fas fa-arrow-right contact-arrow"></i>
+            </a>
+          </div>
+          <a href="./assets/Himanshu_Singh_Resume.pdf" target="_blank" rel="noopener noreferrer"
+            class="btn btn-primary resume-download-btn" id="resume-download-btn">
+            <i class="fas fa-file-download"></i> Download Resume
+          </a>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="contact-form-wrapper" data-aos="fade-left">
+          <form class="contact-form glass-card" id="contact-form" novalidate>
+            <div class="form-header">
+              <h3>Send a Message</h3>
+              <div class="form-status" id="form-status"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="contact-name">Your Name</label>
+                <div class="input-wrapper">
+                  <i class="fas fa-user"></i>
+                  <input type="text" id="contact-name" name="name" placeholder="John Doe" required />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="contact-email">Email Address</label>
+                <div class="input-wrapper">
+                  <i class="fas fa-envelope"></i>
+                  <input type="email" id="contact-email" name="email" placeholder="john@example.com" required />
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="contact-subject">Subject</label>
+              <div class="input-wrapper">
+                <i class="fas fa-tag"></i>
+                <input type="text" id="contact-subject" name="subject" placeholder="AI/ML Collaboration" required />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="contact-message">Message</label>
+              <div class="input-wrapper textarea-wrapper">
+                <i class="fas fa-comment-alt"></i>
+                <textarea id="contact-message" name="message" placeholder="Tell me about your project or opportunity..."
+                  rows="5" required></textarea>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary form-submit-btn" id="form-submit-btn">
+              <i class="fas fa-paper-plane"></i>
+              <span>Send Message</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="footer-glow"></div>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <a href="#home" class="nav-logo footer-logo">
+            <img src="assets/images/logo.png" alt="Himanshu Singh Logo" class="logo-img" />
+          </a>
+          <p>Building intelligent solutions with AI & ML.</p>
+        </div>
+        <div class="footer-links">
+          <a href="#home">Home</a>
+          <a href="#about">About</a>
+          <a href="#projects">Projects</a>
+          <a href="#contact">Contact</a>
+        </div>
+        <div class="footer-socials">
+          <a href="https://www.linkedin.com/in/himanshusingh-dehradun" target="_blank" rel="noopener noreferrer"
+            aria-label="LinkedIn" id="footer-linkedin"><i class="fab fa-linkedin-in"></i></a>
+          <a href="https://github.com/Himanshu-Singh11" target="_blank" rel="noopener noreferrer" aria-label="GitHub"
+            id="footer-github"><i class="fab fa-github"></i></a>
+          <a href="https://instagram.com/himanshu_jd.11" target="_blank" rel="noopener noreferrer"
+            aria-label="Instagram" id="footer-instagram"><i class="fab fa-instagram"></i></a>
+          <a href="mailto:himanshujd.0011@gmail.com" aria-label="Email" id="footer-email"><i
+              class="fas fa-envelope"></i></a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 <span class="gradient-text">Himanshu Singh</span>. All Rights Reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Back to Top -->
+  <button class="back-to-top" id="back-to-top" aria-label="Back to top">
+    <i class="fas fa-chevron-up"></i>
+  </button>
+
+  <!-- Image Zoom Modal -->
+  <div id="image-zoom-modal" class="zoom-modal">
+    <span class="zoom-close">&times;</span>
+    <img class="zoom-modal-content" id="zoomed-image" alt="Zoomed view" />
+    <div id="zoom-caption"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
