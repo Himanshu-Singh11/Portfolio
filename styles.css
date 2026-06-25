@@ -619,39 +619,18 @@ body {
 }
 .profile-wrapper {
   position: relative;
-  width: 380px;
-  height: 380px;
+  width: 360px;
+  height: 400px; /* Slightly taller than wide for a classic portrait look */
 }
-
-.profile-ring-outer, .profile-ring-inner {
-  position: absolute;
-  border-radius: 50%;
-  border: 1px solid transparent;
-  animation: ring-spin 20s linear infinite;
-}
-.profile-ring-outer {
-  inset: -20px;
-  border-color: rgba(99,148,255,0.2);
-  background: linear-gradient(var(--bg-primary), var(--bg-primary)) padding-box,
-              var(--gradient-main) border-box;
-}
-.profile-ring-inner {
-  inset: -8px;
-  border-color: rgba(168,85,247,0.15);
-  background: linear-gradient(var(--bg-primary), var(--bg-primary)) padding-box,
-              linear-gradient(225deg, hsl(270,90%,65%), hsl(185,100%,55%)) border-box;
-  animation-direction: reverse;
-  animation-duration: 15s;
-}
-@keyframes ring-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
 .profile-img-container {
   position: absolute;
   inset: 0;
-  border-radius: 50%;
+  border-radius: 32px;
   overflow: hidden;
-  border: 3px solid rgba(99,148,255,0.3);
-  box-shadow: 0 0 60px rgba(99,148,255,0.2), 0 0 120px rgba(168,85,247,0.1);
+  border: 4px solid var(--border-glass);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25);
+  background: var(--bg-secondary);
 }
 .profile-img {
   width: 100%; height: 100%;
@@ -1702,7 +1681,7 @@ body {
   .hero-content { display: flex; flex-direction: column; align-items: center; }
   .hero-tagline { max-width: 100%; }
   .hero-visual { order: -1; margin-top: 40px; }
-  .profile-wrapper { width: 280px; height: 280px; }
+  .profile-wrapper { width: 260px; height: 300px; }
   .profile-badge-1 { right: -20px; }
   .profile-badge-2 { right: -30px; }
   .profile-badge-3 { left: -40px; }
@@ -1776,7 +1755,7 @@ body {
   }
 
   /* Profile photo sizing */
-  .profile-wrapper { width: 240px; height: 240px; }
+  .profile-wrapper { width: 240px; height: 280px; }
 
   .hero-stats { justify-content: center; flex-wrap: wrap; }
   .hero-cta { justify-content: center; }
@@ -1809,7 +1788,7 @@ body {
   .hero-cta .btn { width: 100%; justify-content: center; }
   .about-cta .btn { flex: 1; justify-content: center; }
   .contact-form { padding: 24px 18px; }
-  .profile-wrapper { width: 220px; height: 220px; }
+  .profile-wrapper { width: 220px; height: 250px; }
 }
 
 /* ==========================================
