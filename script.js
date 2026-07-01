@@ -9,319 +9,62 @@
 // LOADER
 // ============================================
 window.addEventListener('load', () => {
-  const loaderText = document.getElementById('loader-text');
-  const leftTerminal = document.getElementById('left-terminal');
-  const rightTerminal = document.getElementById('right-terminal');
-
-  const statuses = [
-    'Initializing Core Systems...',
-    'Loading AI/ML Models...',
-    'Configuring User Interface...',
-    'Establishing Secure Connection...',
-    'Portfolio Ready!'
-  ];
-
-  const leftLogs = [
-    'SYS: Initializing bootloader v4.0.1...',
-    'SYS: Memory Check: 16384MB RAM - OK',
-    'SYS: GPU: NVIDIA CUDA Core v12.2',
-    'SYS: CUDA Cores: 10420, VRAM: 16GB',
-    'SYS: Loading PyTorch Deep Learning core...',
-    'SYS: Loading TensorFlow core libraries...',
-    'SYS: Spawning sub-process instances...',
-    'MOD: Fetching ResNet pre-trained weights...',
-    'MOD: Weights loaded successfully. (SHA256 OK)',
-    'MOD: Initializing BERT-tokenizer configs...',
-    'MOD: Tokenizer loaded. Volatility threshold: 0.15',
-    'DB: Connection active: pgsql://localhost:5432',
-    'NET: Checking WebSocket handshake response...',
-    'NET: Server latency: 14ms (Optimal)',
-    'NET: Secure tunnel connection established.',
-    'UI: Activating GPU hardware acceleration...',
-    'UI: Parsing theme variables & design tokens...',
-    'UI: Rendering CSS glassmorphism grids...',
-    'UI: Binding particle canvas interactive events...',
-    'UI: Layout node architecture compiled.',
-    'SYS: All systems nominal. Launching...'
-  ];
-
-  const rightLogs = [
-    '0x00FF8C: [NEURAL LAYER BUILDER]',
-    'input_tensor: shape [batch_size, 3, 224, 224]',
-    'layer_1: Conv2D(3, 64, kernel=7, stride=2)',
-    'layer_1_act: LeakyReLU(0.2) -> MaxPool2D(3, 2)',
-    'layer_2: ResBlock(64, 64, stride=1)',
-    'layer_3: ResBlock(64, 128, stride=2)',
-    'layer_4: ResBlock(128, 256, stride=2)',
-    'layer_5: ResBlock(256, 512, stride=2)',
-    'pooling_node: AdaptiveAvgPool2d(1, 1)',
-    'fc_layer: Linear(512, 10) -> Softmax()',
-    'optimizer_node: Adam(lr=0.001, beta1=0.9)',
-    'loss_function: CrossEntropyLoss()',
-    'epoch: 001/100 | training_loss: 0.8934',
-    'epoch: 025/100 | training_loss: 0.3421',
-    'epoch: 050/100 | training_loss: 0.1284',
-    'epoch: 075/100 | training_loss: 0.0452',
-    'epoch: 100/100 | training_loss: 0.0019',
-    'metrics: train_acc=99.82%, test_acc=98.74%',
-    'metrics: F1-score=0.986, AUC-ROC=0.992',
-    'STATE: Weights optimization finalized.'
-  ];
+  const bootScreen = document.getElementById('boot-screen');
+  const progressFill = document.getElementById('boot-progress-fill');
+  const percentText = document.getElementById('boot-percent');
   
-  if (loaderText) {
-    let currentIdx = 0;
-    const interval = setInterval(() => {
-      if (currentIdx < statuses.length - 1) {
-        currentIdx++;
-        loaderText.textContent = statuses[currentIdx];
-      } else {
-        clearInterval(interval);
-      }
-    }, 340);
-  }
-
-  const leftLogsStream = document.getElementById('left-logs-stream');
-  const rightLogsStream = document.getElementById('right-logs-stream');
-
-  if (leftLogsStream && rightLogsStream) {
-    let logIdx = 0;
-    const logInterval = setInterval(() => {
-      if (logIdx < leftLogs.length || logIdx < rightLogs.length) {
-        if (leftLogs[logIdx]) {
-          const p = document.createElement('div');
-          p.className = 'terminal-line';
-          p.textContent = leftLogs[logIdx];
-          leftLogsStream.appendChild(p);
-          leftLogsStream.scrollTop = leftLogsStream.scrollHeight;
-          
-          const mobileLogsStream = document.getElementById('mobile-logs-stream');
-          if (mobileLogsStream) {
-            const pm = document.createElement('div');
-            pm.className = 'terminal-line';
-            pm.textContent = leftLogs[logIdx];
-            mobileLogsStream.appendChild(pm);
-            mobileLogsStream.scrollTop = mobileLogsStream.scrollHeight;
-          }
-        }
-        if (rightLogs[logIdx]) {
-          const p = document.createElement('div');
-          p.className = 'terminal-line';
-          p.textContent = rightLogs[logIdx];
-          rightLogsStream.appendChild(p);
-          rightLogsStream.scrollTop = rightLogsStream.scrollHeight;
-        }
-        logIdx++;
-      } else {
-        clearInterval(logInterval);
-      }
-    }, 65);
-  }
-
-  // Live Oscilloscope Canvas Drawing Loop
-  function initOscilloscope(canvasId) {
-    const oscCanvas = document.getElementById(canvasId);
-    if (!oscCanvas) return;
-    const ctx = oscCanvas.getContext('2d');
-    let offset = 0;
-    function drawOscilloscope() {
-      if (document.getElementById('loader').classList.contains('hidden')) return;
-      ctx.clearRect(0, 0, oscCanvas.width, oscCanvas.height);
+  if (bootScreen && progressFill) {
+    let progress = 0;
+    const bootInterval = setInterval(() => {
+      progress += Math.random() * 15;
+      if (progress >= 100) progress = 100;
       
-      // Draw grid lines
-      ctx.strokeStyle = 'rgba(168, 85, 247, 0.08)';
-      ctx.lineWidth = 0.5;
-      for (let x = 20; x < oscCanvas.width; x += 20) {
-        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, oscCanvas.height); ctx.stroke();
+      progressFill.style.width = progress + '%';
+      if (percentText) percentText.textContent = Math.floor(progress) + '%';
+      
+      if (progress === 100) {
+        clearInterval(bootInterval);
+        setTimeout(() => {
+          bootScreen.classList.add('hidden');
+          
+          // Trigger initial AOS
+          document.querySelectorAll('[data-aos]').forEach(el => {
+            checkAOS(el);
+          });
+          
+          setTimeout(() => {
+            bootScreen.remove();
+          }, 800);
+        }, 500);
       }
-      for (let y = 15; y < oscCanvas.height; y += 15) {
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(oscCanvas.width, y); ctx.stroke();
-      }
-
-      ctx.strokeStyle = 'rgba(168, 85, 247, 0.65)';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      for (let x = 0; x < oscCanvas.width; x++) {
-        const y = oscCanvas.height / 2 + Math.sin(x * 0.045 + offset) * 16 * Math.sin(x * 0.008 + offset * 0.25);
-        if (x === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      }
-      ctx.stroke();
-      offset += 0.12;
-      requestAnimationFrame(drawOscilloscope);
-    }
-    drawOscilloscope();
+    }, 150);
   }
-  initOscilloscope('oscilloscope');
-  initOscilloscope('oscilloscope-m');
-
-  // Live Fluctuating Metrics (CPU, RAM, GPU)
-  const cpuBar = document.getElementById('cpu-bar');
-  const ramBar = document.getElementById('ram-bar');
-  const gpuBar = document.getElementById('gpu-bar');
-  const cpuVal = document.getElementById('cpu-val');
-  const ramVal = document.getElementById('ram-val');
-  const gpuVal = document.getElementById('gpu-val');
-
-  const cpuBarM = document.getElementById('cpu-bar-m');
-  const ramBarM = document.getElementById('ram-bar-m');
-  const cpuValM = document.getElementById('cpu-val-m');
-  const ramValM = document.getElementById('ram-val-m');
-
-  const metricInterval = setInterval(() => {
-    if (document.getElementById('loader').classList.contains('hidden')) {
-      clearInterval(metricInterval);
-      return;
-    }
-    const cpu = Math.floor(Math.random() * 25) + 55; // 55% - 80%
-    const ram = Math.min(Math.floor(Math.random() * 4) + 76, 99); // 76% - 80%
-    const gpu = Math.floor(Math.random() * 20) + 65; // 65% - 85%
-
-    if (cpuBar) cpuBar.style.width = cpu + '%';
-    if (ramBar) ramBar.style.width = ram + '%';
-    if (gpuBar) gpuBar.style.width = gpu + '%';
-
-    if (cpuBarM) cpuBarM.style.width = cpu + '%';
-    if (ramBarM) ramBarM.style.width = ram + '%';
-
-    if (cpuVal) cpuVal.textContent = cpu + '%';
-    if (ramVal) ramVal.textContent = ram + '%';
-    if (gpuVal) gpuVal.textContent = gpu + '%';
-
-    if (cpuValM) cpuValM.textContent = cpu + '%';
-    if (ramValM) ramValM.textContent = ram + '%';
-  }, 100);
-
-  setTimeout(() => {
-    const loader = document.getElementById('loader');
-    if (loader) loader.classList.add('hidden');
-    clearInterval(metricInterval);
-    // Trigger initial AOS
-    document.querySelectorAll('[data-aos]').forEach(el => {
-      checkAOS(el);
-    });
-  }, 1800);
 });
 
 // ============================================
-// PARTICLE CANVAS
+// PARTICLE CANVAS - 3D GLOBE & BACKGROUND
 // ============================================
-(function initParticles() {
-  const canvas = document.getElementById('particle-canvas');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  let mouse = { x: null, y: null, radius: 120 };
-  let W, H;
-  let particles = [];
-  let animId;
-
-  window.addEventListener('mousemove', (e) => {
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
-  });
-
-  window.addEventListener('mouseleave', () => {
-    mouse.x = null;
-    mouse.y = null;
-  });
-
-  function resize() {
-    W = canvas.width  = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-  }
-
-  function randomBetween(a, b) { return a + Math.random() * (b - a); }
-
-  function createParticle() {
-    return {
-      x: randomBetween(0, W),
-      y: randomBetween(0, H),
-      vx: randomBetween(-0.15, 0.15),
-      vy: randomBetween(-0.25, -0.05),
-      radius: randomBetween(0.8, 2.2),
-      alpha: randomBetween(0.1, 0.5),
-      color: Math.random() > 0.5
-        ? `rgba(99, 148, 255, `
-        : Math.random() > 0.5
-          ? `rgba(168, 85, 247, `
-          : `rgba(0, 200, 220, `,
-    };
-  }
-
-  function init() {
-    resize();
-    particles = Array.from({ length: 45 }, createParticle);
-  }
-
-  function drawConnections() {
-    const maxDist = 90;
-    const maxDistSq = maxDist * maxDist;
-    for (let i = 0; i < particles.length; i++) {
-      for (let j = i + 1; j < particles.length; j++) {
-        const dx = particles[i].x - particles[j].x;
-        const dy = particles[i].y - particles[j].y;
-        const distSq = dx * dx + dy * dy;
-        if (distSq < maxDistSq) {
-          const dist = Math.sqrt(distSq);
-          const alpha = (1 - dist / maxDist) * 0.12;
-          ctx.strokeStyle = `rgba(99, 148, 255, ${alpha})`;
-          ctx.lineWidth = 0.5;
-          ctx.beginPath();
-          ctx.moveTo(particles[i].x, particles[i].y);
-          ctx.lineTo(particles[j].x, particles[j].y);
-          ctx.stroke();
-        }
-      }
-    }
-  }
-
-  function animate() {
-    ctx.clearRect(0, 0, W, H);
-    drawConnections();
-    const mouseRadSq = mouse.radius * mouse.radius;
-    
-    particles.forEach(p => {
-      // Interactive cursor repulsion & connections
-      if (mouse.x !== null && mouse.y !== null) {
-        const dx = p.x - mouse.x;
-        const dy = p.y - mouse.y;
-        const distSq = dx * dx + dy * dy;
-        if (distSq < mouseRadSq) {
-          const dist = Math.sqrt(distSq);
-          const force = (mouse.radius - dist) / mouse.radius;
-          const forceX = (dx / (dist || 1)) * force * 1.2;
-          const forceY = (dy / (dist || 1)) * force * 1.2;
-          p.x += forceX;
-          p.y += forceY;
-
-          // Connect particle to mouse
-          const alpha = (1 - dist / mouse.radius) * 0.15;
-          ctx.strokeStyle = `rgba(99, 148, 255, ${alpha})`;
-          ctx.lineWidth = 0.5;
-          ctx.beginPath();
-          ctx.moveTo(p.x, p.y);
-          ctx.lineTo(mouse.x, mouse.y);
-          ctx.stroke();
-        }
-      }
-
-      p.x += p.vx;
-      p.y += p.vy;
-      if (p.y < -5) { p.y = H + 5; p.x = randomBetween(0, W); }
-      if (p.x < -5) p.x = W + 5;
-      if (p.x > W + 5) p.x = -5;
-
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-      ctx.fillStyle = `${p.color}${p.alpha})`;
-      ctx.fill();
+// ============================================
+// VANTA.JS 3D GLOBE BACKGROUND
+// ============================================
+window.addEventListener('DOMContentLoaded', () => {
+  if (typeof VANTA !== 'undefined') {
+    VANTA.GLOBE({
+      el: "#vanta-bg",
+      mouseControls: true,
+      touchControls: true,
+      gyroControls: false,
+      minHeight: 200.00,
+      minWidth: 200.00,
+      scale: 1.00,
+      scaleMobile: 1.00,
+      color: 0x00ff80,
+      color2: 0xa855f7,
+      size: 1.20,
+      backgroundColor: 0x09090b
     });
-    animId = requestAnimationFrame(animate);
   }
-
-  init();
-  animate();
-  window.addEventListener('resize', () => { cancelAnimationFrame(animId); init(); animate(); });
-})();
+});
 
 // ============================================
 // NAVBAR – scroll + mobile toggle

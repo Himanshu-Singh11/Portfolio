@@ -28,123 +28,68 @@
 
 <body>
 
-  <!-- Particle Canvas Background -->
-  <canvas id="particle-canvas"></canvas>
+  <!-- Vanta Canvas Background -->
+  <div id="vanta-bg"></div>
 
-  <!-- Loading Screen -->
-  <div id="loader" class="loader">
-    <div class="loader-grid"></div>
-
-    <!-- Tech HUD widgets on Left -->
-    <div class="loader-terminal left-terminal" id="left-terminal">
-      <div class="hud-widget">
-        <div class="hud-header">[SYSTEM DIAGNOSTICS]</div>
-        <div class="hud-bar-row">
-          <span>CPU LOAD</span>
-          <div class="hud-bar-container">
-            <div class="hud-bar-fill" id="cpu-bar" style="width: 45%;"></div>
-          </div>
-          <span id="cpu-val">45%</span>
-        </div>
-        <div class="hud-bar-row">
-          <span>RAM SYS</span>
-          <div class="hud-bar-container">
-            <div class="hud-bar-fill" id="ram-bar" style="width: 78%;"></div>
-          </div>
-          <span id="ram-val">78%</span>
-        </div>
-        <div class="hud-bar-row">
-          <span>GPU Core</span>
-          <div class="hud-bar-container">
-            <div class="hud-bar-fill" id="gpu-bar" style="width: 62%;"></div>
-          </div>
-          <span id="gpu-val">62%</span>
-        </div>
+  <!-- Loading Screen (Boot Terminal) -->
+  <div id="boot-screen" class="boot-screen">
+    <div class="boot-glow boot-glow--cyan"></div>
+    <div class="boot-glow boot-glow--purple"></div>
+    <div class="boot-stage">
+      <div class="boot-cube">
+        <span class="boot-cube__face boot-cube__face--front"></span>
+        <span class="boot-cube__face boot-cube__face--back"></span>
+        <span class="boot-cube__face boot-cube__face--right"></span>
+        <span class="boot-cube__face boot-cube__face--left"></span>
+        <span class="boot-cube__face boot-cube__face--top"></span>
+        <span class="boot-cube__face boot-cube__face--bottom"></span>
       </div>
-      <div class="hud-divider"></div>
-      <div class="logs-stream" id="left-logs-stream"></div>
     </div>
-
-    <!-- Tech HUD widgets on Right -->
-    <div class="loader-terminal right-terminal" id="right-terminal">
-      <div class="hud-widget">
-        <div class="hud-header">[OPTIMIZATION WAVE]</div>
-        <canvas id="oscilloscope" width="220" height="70"></canvas>
+    <div class="boot-terminal">
+      <div class="boot-terminal__bar">
+        <span class="boot-dot boot-dot--r"></span>
+        <span class="boot-dot boot-dot--y"></span>
+        <span class="boot-dot boot-dot--g"></span>
+        <span class="boot-terminal__title">himanshu@portfolio — ~/boot</span>
       </div>
-      <div class="hud-divider"></div>
-      <div class="logs-stream" id="right-logs-stream"></div>
-    </div>
-
-    <div class="loader-content">
-      <div class="loader-logo">
-        <div class="loader-ring-outer"></div>
-        <div class="loader-ring-inner"></div>
-        <div class="loader-hud-ticks"></div>
-        <img src="assets/images/logo.png" alt="Himanshu Singh Logo" class="logo-img" />
-      </div>
-      <div class="loader-bar">
-        <div class="loader-fill"></div>
-      </div>
-      <p class="loader-text" id="loader-text">Initializing Portfolio...</p>
-
-      <!-- Mobile-only inline HUD panel -->
-      <div class="loader-mobile-hud">
-        <div class="loader-mobile-hud-top">
-          <div class="loader-mobile-metrics">
-            <div class="loader-mobile-metric-header">[SYSTEM DIAGNOSTICS]</div>
-            <div class="hud-bar-row">
-              <span>CPU</span>
-              <div class="hud-bar-container">
-                <div class="hud-bar-fill" id="cpu-bar-m" style="width:45%"></div>
-              </div>
-              <span id="cpu-val-m">45%</span>
-            </div>
-            <div class="hud-bar-row">
-              <span>RAM</span>
-              <div class="hud-bar-container">
-                <div class="hud-bar-fill" id="ram-bar-m" style="width:78%"></div>
-              </div>
-              <span id="ram-val-m">78%</span>
-            </div>
-            <div class="hud-bar-row">
-              <span>GPU</span>
-              <div class="hud-bar-container">
-                <div class="hud-bar-fill" id="gpu-bar-m" style="width:62%"></div>
-              </div>
-              <span id="gpu-val-m">62%</span>
-            </div>
-          </div>
-          <div class="loader-mobile-osc">
-            <div class="loader-mobile-metric-header">[WAVE]</div>
-            <canvas id="oscilloscope-m" width="140" height="50"></canvas>
-          </div>
+      <div class="boot-terminal__body">
+        <p class="boot-line boot-line--cmd"><span class="boot-prompt">$</span> ./launch --portfolio</p>
+        <p class="boot-line boot-line--live"><span class="boot-prompt">›</span> booting interface<span class="boot-cursor">_</span></p>
+        <div class="boot-progress">
+          <div class="boot-progress__fill" id="boot-progress-fill"></div>
         </div>
-        <div class="loader-mobile-logs" id="mobile-logs-stream"></div>
+        <p class="boot-percent"><span id="boot-percent-val">0</span>%</p>
       </div>
     </div>
   </div>
 
-  <!-- Navigation -->
-  <nav id="navbar" class="navbar">
-    <div class="nav-container">
-      <a href="#home" class="nav-logo">
-        <img src="assets/images/logo.png" alt="Himanshu Singh Logo" class="logo-img" />
+  <!-- Floating Glass Pill Navigation -->
+  <header class="glass-header">
+    <nav class="glass-nav">
+      <a class="nav-brand" href="#home">
+        <span class="brand-text">himanshu</span>
       </a>
-      <ul class="nav-links" id="nav-links">
-        <li><a href="#home" class="nav-link active" data-section="home">Home</a></li>
-        <li><a href="#about" class="nav-link" data-section="about">About</a></li>
-        <li><a href="#skills" class="nav-link" data-section="skills">Skills</a></li>
-        <li><a href="#services" class="nav-link" data-section="services">What I Do</a></li>
-        <li><a href="#experience" class="nav-link" data-section="experience">Experience</a></li>
-        <li><a href="#projects" class="nav-link" data-section="projects">Projects</a></li>
-        <li><a href="#certifications" class="nav-link" data-section="certifications">Certifications</a></li>
-        <li><a href="#contact" class="nav-link" data-section="contact">Contact</a></li>
-      </ul>
-      <button class="hamburger" id="hamburger" aria-label="Toggle Menu">
-        <span></span><span></span><span></span>
+      <div class="nav-links-wrapper">
+        <div class="nav-links-pill">
+          <a class="nav-link active" href="#home" data-section="home"><span>_hello</span></a>
+          <a class="nav-link" href="#about" data-section="about"><span>_about-me</span></a>
+          <a class="nav-link" href="#skills" data-section="skills"><span>_skills</span></a>
+          <a class="nav-link" href="#projects" data-section="projects"><span>_projects</span></a>
+          <a class="nav-link" href="#experience" data-section="experience"><span>_experience</span></a>
+          <a class="nav-link" href="#contact" data-section="contact"><span>_contact</span></a>
+        </div>
+      </div>
+      <div class="nav-actions">
+        <a href="#contact" class="btn-contact-pill">
+          <span>contact-me</span>
+          <i class="fa-solid fa-arrow-up-right-from-square"></i>
+        </a>
+      </div>
+      <button class="hamburger-glass" id="hamburger" aria-label="Toggle Menu">
+        <i class="fa-solid fa-bars"></i>
       </button>
-    </div>
-  </nav>
+    </nav>
+  </header>
 
   <!-- ===== HERO SECTION ===== -->
   <section id="home" class="hero">
@@ -231,77 +176,54 @@
         <h2 class="section-title">About <span class="gradient-text">Me</span></h2>
         <div class="section-line"></div>
       </div>
-      <div class="about-grid">
-        <div class="about-image-side" data-aos="fade-right">
-          <div class="about-img-wrapper">
-            <img src="assets/images/profile.png" alt="Himanshu Singh" class="about-img" />
-            <div class="about-img-glow"></div>
-          </div>
-          <div class="about-info-cards">
-            <div class="info-card glass-card">
-              <i class="fas fa-graduation-cap"></i>
-              <div>
-                <strong>B.Tech CSE (AI & ML)</strong>
-                <span>3rd Year Student</span>
-              </div>
-            </div>
-            <div class="info-card glass-card">
-              <i class="fas fa-basketball-ball"></i>
-              <div>
-                <strong>Indo-Nepal Championship</strong>
-                <span>Represented India 🇮🇳</span>
-              </div>
-            </div>
-            <div class="info-card glass-card">
-              <i class="fas fa-trophy"></i>
-              <div>
-                <strong>CATALYST President</strong>
-                <span>Career Services Club</span>
-              </div>
+      <div class="bento-grid-about">
+        
+        <!-- Main Bio Card -->
+        <div class="bento-card bento-card-main glass-card" data-aos="fade-up">
+          <div class="bento-card-inner">
+            <h3 class="about-greeting">Hello! I'm <span class="gradient-text">Himanshu Singh</span></h3>
+            <p class="about-description">
+              I'm a third-year <strong>B.Tech Computer Science & Engineering (AI & ML)</strong> student passionate about 
+              <strong>Artificial Intelligence, Machine Learning, Deep Learning,</strong> and <strong>Generative AI</strong>. 
+              I enjoy building intelligent solutions that solve real-world problems through technology and innovation.
+            </p>
+            <div class="about-cta-inline">
+              <a href="#contact" class="btn btn-primary" id="about-hire-btn">
+                <i class="fas fa-handshake"></i> Hire Me
+              </a>
+              <a href="./assets/Himanshu_Singh_Resume.pdf" class="btn btn-outline" id="about-resume-btn" target="_blank">
+                <i class="fas fa-download"></i> Download CV
+              </a>
             </div>
           </div>
         </div>
-        <div class="about-text-side" data-aos="fade-left">
-          <h3 class="about-greeting">Hello! I'm <span class="gradient-text">Himanshu Singh</span></h3>
-          <p class="about-description">
-            I'm a third-year <strong>B.Tech Computer Science & Engineering (AI & ML)</strong> student passionate about
-            <strong>Artificial Intelligence, Machine Learning, Deep Learning,</strong> and <strong>Generative
-              AI</strong>. I enjoy building intelligent solutions that solve real-world problems through technology and
-            innovation.
-          </p>
-          <p class="about-description">
-            Alongside my technical journey, I have proudly <strong>represented India at the Indo-Nepal International
-              Basketball Championship</strong>, which has strengthened my leadership, teamwork, and resilience —
-            qualities I bring to every project and collaboration.
-          </p>
-          <div class="about-highlights">
-            <div class="highlight-item">
-              <i class="fas fa-check-circle"></i>
-              <span>Machine Learning & Deep Learning enthusiast</span>
-            </div>
-            <div class="highlight-item">
-              <i class="fas fa-check-circle"></i>
-              <span>Generative AI & LLM researcher</span>
-            </div>
-            <div class="highlight-item">
-              <i class="fas fa-check-circle"></i>
-              <span>President of CATALYST Career Club</span>
-            </div>
-            <div class="highlight-item">
-              <i class="fas fa-check-circle"></i>
-              <span>International Basketball player for India</span>
-            </div>
-          </div>
-          <div class="about-cta">
-            <a href="#contact" class="btn btn-primary" id="about-hire-btn">
-              <i class="fas fa-handshake"></i> Hire Me
-            </a>
-            <a href="./assets/Himanshu_Singh_Resume.pdf" class="btn btn-outline" id="about-resume-btn" target="_blank"
-              rel="noopener noreferrer">
-              <i class="fas fa-download"></i> Download CV
-            </a>
+
+        <!-- Image Card -->
+        <div class="bento-card bento-card-image glass-card" data-aos="fade-up" data-aos-delay="100">
+          <div class="bento-img-wrapper">
+            <img src="assets/images/profile.png" alt="Himanshu Singh" class="bento-img" />
+            <div class="bento-img-glow"></div>
           </div>
         </div>
+
+        <!-- Quick Facts Card 1 -->
+        <div class="bento-card bento-card-sm glass-card" data-aos="fade-up" data-aos-delay="200">
+          <i class="fas fa-basketball-ball bento-icon"></i>
+          <div class="bento-content">
+            <h4>International Player</h4>
+            <p>Indo-Nepal Championship 🇮🇳</p>
+          </div>
+        </div>
+
+        <!-- Quick Facts Card 2 -->
+        <div class="bento-card bento-card-sm glass-card" data-aos="fade-up" data-aos-delay="300">
+          <i class="fas fa-trophy bento-icon"></i>
+          <div class="bento-content">
+            <h4>President</h4>
+            <p>CATALYST Career Club</p>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>
@@ -1184,7 +1106,9 @@
     <div id="zoom-caption"></div>
   </div>
 
+  <!-- Three.js and Vanta.js for Advanced 3D Backgrounds -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.globe.min.js"></script>
   <script src="script.js"></script>
 </body>
-
 </html>
