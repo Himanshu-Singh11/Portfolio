@@ -5,6 +5,12 @@
 
 'use strict';
 
+// Force browser to top on refresh
+if (history.scrollRestoration) {
+  history.scrollRestoration = 'manual';
+}
+window.scrollTo(0, 0);
+
 // ============================================
 // LOADER
 // ============================================
@@ -195,10 +201,14 @@ window.addEventListener('load', () => {
     const loader = document.getElementById('loader');
     if (loader) loader.classList.add('hidden');
     clearInterval(metricInterval);
-    // Trigger initial AOS
-    document.querySelectorAll('[data-aos]').forEach(el => {
-      checkAOS(el);
-    });
+    
+    // Trigger Anime.js Intro Sequence if anime is available
+    if (typeof anime !== 'undefined') {
+      playIntroAnimation();
+    } else {
+      // Fallback
+      document.querySelectorAll('[data-aos]').forEach(el => checkAOS(el));
+    }
   }, 1800);
 });
 
@@ -209,118 +219,279 @@ window.addEventListener('load', () => {
   const canvas = document.getElementById('particle-canvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
-  let mouse = { x: null, y: null, radius: 120 };
   let W, H;
-  let particles = [];
   let animId;
+
+  const maxNodesPool = 220; // Optimal balance of density and performance
+  const connectionDistance = 180; // Increased so more lines draw
+  const mouseInteractionDistance = 280; // Increased for higher sensitivity
+
+  const colorBg = '#0a0a0f';
+  const colorPrimary = '#2563eb';
+  const colorAccent = '#06b6d4';
+
+  let nodes = [];
+  let dataPackets = [];
+  let sonarPings = [];
+  let binaryTrails = [];
+
+  let mouse = { x: -1000, y: -1000 };
+  let targetScrollY = window.scrollY || 0;
+  let currentScrollY = window.scrollY || 0;
+
+  window.addEventListener('scroll', () => {
+    targetScrollY = window.scrollY;
+  });
 
   window.addEventListener('mousemove', (e) => {
     mouse.x = e.clientX;
     mouse.y = e.clientY;
   });
-
-  window.addEventListener('mouseleave', () => {
-    mouse.x = null;
-    mouse.y = null;
+  window.addEventListener('mouseout', () => {
+    mouse.x = -1000;
+    mouse.y = -1000;
+  });
+  window.addEventListener('click', (e) => {
+    sonarPings.push({ x: e.clientX, y: e.clientY, radius: 0, maxRadius: 400, alpha: 0.8 });
   });
 
   function resize() {
-    W = canvas.width  = window.innerWidth;
+    W = canvas.width = window.innerWidth;
     H = canvas.height = window.innerHeight;
+    initNodes();
   }
 
-  function randomBetween(a, b) { return a + Math.random() * (b - a); }
+  function initNodes() {
+    nodes = [];
+    for (let i = 0; i < maxNodesPool; i++) {
+      const layer = Math.random() < 0.3 ? 0 : Math.random() < 0.6 ? 1 : 2;
+      let radius, speedMult;
+      if (layer === 0) { radius = 0.5; speedMult = 0.1; } // Slower
+      else if (layer === 1) { radius = 1.0; speedMult = 0.3; }
+      else { radius = 1.5; speedMult = 0.5; }
 
-  function createParticle() {
-    return {
-      x: randomBetween(0, W),
-      y: randomBetween(0, H),
-      vx: randomBetween(-0.15, 0.15),
-      vy: randomBetween(-0.25, -0.05),
-      radius: randomBetween(0.8, 2.2),
-      alpha: randomBetween(0.1, 0.5),
-      color: Math.random() > 0.5
-        ? `rgba(99, 148, 255, `
-        : Math.random() > 0.5
-          ? `rgba(168, 85, 247, `
-          : `rgba(0, 200, 220, `,
-    };
+      nodes.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        vx: (Math.random() - 0.5) * speedMult,
+        vy: (Math.random() - 0.5) * speedMult,
+        radius: radius,
+        baseRadius: radius,
+        layer: layer,
+        flare: 0
+      });
+    }
   }
 
   function init() {
     resize();
-    particles = Array.from({ length: 45 }, createParticle);
-  }
-
-  function drawConnections() {
-    const maxDist = 90;
-    const maxDistSq = maxDist * maxDist;
-    for (let i = 0; i < particles.length; i++) {
-      for (let j = i + 1; j < particles.length; j++) {
-        const dx = particles[i].x - particles[j].x;
-        const dy = particles[i].y - particles[j].y;
-        const distSq = dx * dx + dy * dy;
-        if (distSq < maxDistSq) {
-          const dist = Math.sqrt(distSq);
-          const alpha = (1 - dist / maxDist) * 0.12;
-          ctx.strokeStyle = `rgba(99, 148, 255, ${alpha})`;
-          ctx.lineWidth = 0.5;
-          ctx.beginPath();
-          ctx.moveTo(particles[i].x, particles[i].y);
-          ctx.lineTo(particles[j].x, particles[j].y);
-          ctx.stroke();
-        }
-      }
-    }
+    window.addEventListener('resize', resize);
   }
 
   function animate() {
-    ctx.clearRect(0, 0, W, H);
-    drawConnections();
-    const mouseRadSq = mouse.radius * mouse.radius;
+    let scrollHeight = Math.max(
+      document.body.scrollHeight, document.documentElement.scrollHeight,
+      document.body.offsetHeight, document.documentElement.offsetHeight,
+      document.body.clientHeight, document.documentElement.clientHeight
+    );
+    let maxScroll = scrollHeight - window.innerHeight;
+    if (maxScroll < 1) maxScroll = 1;
     
-    particles.forEach(p => {
-      // Interactive cursor repulsion & connections
-      if (mouse.x !== null && mouse.y !== null) {
-        const dx = p.x - mouse.x;
-        const dy = p.y - mouse.y;
-        const distSq = dx * dx + dy * dy;
-        if (distSq < mouseRadSq) {
-          const dist = Math.sqrt(distSq);
-          const force = (mouse.radius - dist) / mouse.radius;
-          const forceX = (dx / (dist || 1)) * force * 1.2;
-          const forceY = (dy / (dist || 1)) * force * 1.2;
-          p.x += forceX;
-          p.y += forceY;
+    // Lerp scroll for inertia - increased multiplier for higher sensitivity
+    currentScrollY += (targetScrollY - currentScrollY) * 0.15;
+    let scrollVelocity = (targetScrollY - currentScrollY) * 0.15;
+    let scrollProgress = currentScrollY / maxScroll;
 
-          // Connect particle to mouse
-          const alpha = (1 - dist / mouse.radius) * 0.15;
-          ctx.strokeStyle = `rgba(99, 148, 255, ${alpha})`;
-          ctx.lineWidth = 0.5;
-          ctx.beginPath();
-          ctx.moveTo(p.x, p.y);
-          ctx.lineTo(mouse.x, mouse.y);
-          ctx.stroke();
+    ctx.fillStyle = colorBg;
+    ctx.fillRect(0, 0, W, H);
+
+    // Update & Draw Sonar Pings
+    for (let i = sonarPings.length - 1; i >= 0; i--) {
+      let p = sonarPings[i];
+      p.radius += 6;
+      p.alpha -= 0.015;
+      
+      if (p.alpha <= 0) {
+        sonarPings.splice(i, 1);
+        continue;
+      }
+      
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(216, 180, 254, ${p.alpha})`;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
+
+    // Update & Draw Binary Trails
+    ctx.font = '10px monospace';
+    ctx.textAlign = 'center';
+    for (let i = binaryTrails.length - 1; i >= 0; i--) {
+      let b = binaryTrails[i];
+      b.y += b.vy;
+      b.alpha -= 0.02;
+      
+      if (b.alpha <= 0) {
+        binaryTrails.splice(i, 1);
+        continue;
+      }
+      
+      ctx.fillStyle = `rgba(129, 140, 248, ${b.alpha})`;
+      ctx.fillText(b.char, b.x, b.y);
+    }
+
+    let activeNodes = maxNodesPool; // Always draw all nodes for maximum density!
+
+    // Update & Draw Nodes
+    for (let i = 0; i < Math.min(nodes.length, activeNodes); i++) {
+      let n1 = nodes[i];
+      
+      // Much gentler parallax intensity
+      let parallaxVy = -scrollVelocity * (n1.layer === 2 ? 0.3 : (n1.layer === 1 ? 0.15 : 0.05));
+      
+      n1.x += n1.vx;
+      n1.y += n1.vy + parallaxVy;
+
+      if (n1.x < -10) n1.x = W + 10;
+      if (n1.x > W + 10) n1.x = -10;
+      if (n1.y < -10) n1.y = H + 10;
+      if (n1.y > H + 10) n1.y = -10;
+      
+      // Decay flare
+      if (n1.flare > 0) n1.flare -= 0.02;
+      else n1.flare = 0;
+
+      // Check Sonar Intersections
+      for (let p of sonarPings) {
+        let dx = n1.x - p.x;
+        let dy = n1.y - p.y;
+        let dist = Math.sqrt(dx * dx + dy * dy);
+        if (Math.abs(dist - p.radius) < 10) {
+          n1.flare = 1;
         }
       }
 
-      p.x += p.vx;
-      p.y += p.vy;
-      if (p.y < -5) { p.y = H + 5; p.x = randomBetween(0, W); }
-      if (p.x < -5) p.x = W + 5;
-      if (p.x > W + 5) p.x = -5;
+      // Mouse interaction
+      if (mouse.x !== -1000) {
+        let dx = n1.x - mouse.x;
+        let dy = n1.y - mouse.y;
+        let dist = Math.sqrt(dx * dx + dy * dy);
+        
+        if (dist < mouseInteractionDistance) {
+          let force = (mouseInteractionDistance - dist) / mouseInteractionDistance;
+          if (n1.layer === 2) {
+            // Increased repulsion force significantly for higher sensitivity
+            let pushX = (dx / dist) * force * 5;
+            let pushY = (dy / dist) * force * 5;
+            n1.x += pushX;
+            n1.y += pushY;
+            
+            if (force > 0.4 && Math.random() < 0.15) {
+              binaryTrails.push({
+                x: n1.x, y: n1.y,
+                char: Math.random() > 0.5 ? '0' : '1',
+                alpha: 0.8,
+                vy: (Math.random() - 0.5) * 0.5 - 0.5
+              });
+            }
+          } else if (n1.layer === 0) {
+            // Background nodes get drawn IN instead of repelled
+            n1.x -= (dx / dist) * force * 0.8;
+            n1.y -= (dy / dist) * force * 0.8;
+          }
+        }
+      }
+
+      // Drawing node (with Depth Scale and Warp effect)
+      let depthScale = 1 + (scrollProgress * (n1.layer === 0 ? 0.8 : 0));
+      let currentRadius = (n1.baseRadius + (n1.flare * 2)) * depthScale;
+      let opacity = 0.15 + (n1.layer * 0.1) + (n1.flare * 0.6);
+      
+      // Gentle elongation warp based on velocity
+      let stretchY = 1 + Math.abs(parallaxVy) * 0.1;
+      
+      ctx.beginPath();
+      ctx.ellipse(n1.x, n1.y, currentRadius, currentRadius * stretchY, 0, 0, Math.PI * 2);
+      
+      if (n1.flare > 0) {
+        ctx.fillStyle = `rgba(216, 180, 254, ${opacity})`;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = colorAccent;
+      } else {
+        ctx.fillStyle = `rgba(129, 140, 248, ${opacity})`;
+        if (n1.layer === 0) {
+          ctx.shadowBlur = 3;
+          ctx.shadowColor = colorPrimary;
+        } else {
+          ctx.shadowBlur = 0;
+        }
+      }
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      // Connections
+      for (let j = i + 1; j < Math.min(nodes.length, activeNodes); j++) {
+        let n2 = nodes[j];
+        if (Math.abs(n1.layer - n2.layer) > 1) continue;
+
+        let dx = n1.x - n2.x;
+        let dy = n1.y - n2.y;
+        let dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < connectionDistance) {
+          ctx.beginPath();
+          ctx.moveTo(n1.x, n1.y);
+          ctx.lineTo(n2.x, n2.y);
+          
+          let alpha = (1 - dist / connectionDistance) * 0.2;
+          if (n1.flare > 0 || n2.flare > 0) alpha += 0.2;
+          
+          ctx.strokeStyle = `rgba(129, 140, 248, ${alpha})`;
+          ctx.lineWidth = 0.5 + (n1.layer * 0.2);
+          ctx.stroke();
+
+          // Spawn Data Packet - frequency scales with scroll
+          let activePacketChance = 0.0002 + (scrollProgress * 0.0008);
+          if (Math.random() < activePacketChance) {
+            dataPackets.push({
+              x: n1.x, y: n1.y,
+              target: n2,
+              progress: 0,
+              speed: Math.random() * 0.02 + 0.02
+            });
+          }
+        }
+      }
+    }
+
+    // Update & Draw Data Packets
+    for (let i = dataPackets.length - 1; i >= 0; i--) {
+      let p = dataPackets[i];
+      p.progress += p.speed;
+      
+      if (p.progress >= 1) {
+        dataPackets.splice(i, 1);
+        continue;
+      }
+
+      let curX = p.x + (p.target.x - p.x) * p.progress;
+      let curY = p.y + (p.target.y - p.y) * p.progress;
 
       ctx.beginPath();
-      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-      ctx.fillStyle = `${p.color}${p.alpha})`;
+      ctx.arc(curX, curY, 1.5, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(216, 180, 254, 0.9)`;
+      ctx.shadowBlur = 8;
+      ctx.shadowColor = colorAccent;
       ctx.fill();
-    });
+    }
+    ctx.shadowBlur = 0;
+
     animId = requestAnimationFrame(animate);
   }
 
   init();
   animate();
-  window.addEventListener('resize', () => { cancelAnimationFrame(animId); init(); animate(); });
+  // Removed buggy resize listener that cancelled animation
 })();
 
 // ============================================
@@ -339,6 +510,7 @@ window.addEventListener('scroll', () => {
       }
       updateActiveNav();
       toggleScrollIndicator();
+      
       toggleBackToTop();
       triggerSkillBars();
       triggerAOS();
@@ -616,69 +788,58 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
+
 // ============================================
-// CUSTOM INTERACTIVE CURSOR (desktop only)
 // ============================================
-if (window.matchMedia('(pointer: fine)').matches) {
-  const dot = document.createElement('div');
-  dot.className = 'custom-cursor-dot';
-  const outline = document.createElement('div');
-  outline.className = 'custom-cursor-outline';
+// SYSTEM STATUS PILL - DYNAMIC DATA
+// ============================================
+  const uptimeDisplay = document.getElementById('uptime-display');
+  const tempDisplay = document.getElementById('temp-display');
+  const fpsDisplay = document.getElementById('fps-display');
   
-  document.body.appendChild(dot);
-  document.body.appendChild(outline);
-  document.body.classList.add('has-custom-cursor');
-
-  let mouseX = 0, mouseY = 0;
-  let dotX = 0, dotY = 0;
-  let outlineX = 0, outlineY = 0;
-
-  // Tracking speed / delay factor (lower = smoother/slower)
-  const ease = 0.28;
-
-  document.addEventListener('mousemove', (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-  }, { passive: true });
-
-  function animateCursor() {
-    dotX = mouseX;
-    dotY = mouseY;
-    dot.style.transform = `translate3d(${dotX}px, ${dotY}px, 0) translate(-50%, -50%)`;
-
-    outlineX += (mouseX - outlineX) * ease;
-    outlineY += (mouseY - outlineY) * ease;
-    outline.style.transform = `translate3d(${outlineX}px, ${outlineY}px, 0) translate(-50%, -50%)`;
-
-    requestAnimationFrame(animateCursor);
+  // 1. Uptime Counter (Real uptime since page load)
+  if (uptimeDisplay) {
+    let uptimeSeconds = 0;
+    setInterval(() => {
+      uptimeSeconds++;
+      
+      let displayTime = '';
+      if (uptimeSeconds >= 60) {
+        const mins = Math.floor(uptimeSeconds / 60);
+        const secs = uptimeSeconds % 60;
+        displayTime = `${mins}m ${secs}s`;
+      } else {
+        displayTime = `${uptimeSeconds}s`;
+      }
+      uptimeDisplay.textContent = `Uptime ${displayTime}`;
+    }, 1000);
   }
-  requestAnimationFrame(animateCursor);
 
-  // Hover animations on interactive elements
-  const hoverTargets = 'a, button, select, input, textarea, .skill-card, .project-card, .achievement-card, .hamburger, .social-icon, .footer-socials a, .back-to-top';
-  
-  document.addEventListener('mouseover', (e) => {
-    if (e.target.closest(hoverTargets)) {
-      document.body.classList.add('custom-cursor-hover');
-    }
-  });
+  // 2. Temp Fluctuation (Realistic CPU temp walk)
+  if (tempDisplay) {
+    let currentTemp = 32.5; // Start in the middle
+    setInterval(() => {
+      // Move up or down by a maximum of 0.8 degrees
+      const change = (Math.random() * 1.6) - 0.8;
+      currentTemp += change;
+      
+      // Clamp between 30.0 and 35.0
+      if (currentTemp > 35.0) currentTemp = 35.0;
+      if (currentTemp < 30.0) currentTemp = 30.0;
+      
+      tempDisplay.textContent = `Temp ${currentTemp.toFixed(1)}°C`;
+    }, 4500); // update every 4.5 seconds for slower, realistic changes
+  }
 
-  document.addEventListener('mouseout', (e) => {
-    if (!e.target.closest(hoverTargets) || (e.relatedTarget && e.relatedTarget.closest(hoverTargets))) {
-      document.body.classList.remove('custom-cursor-hover');
-    }
-  });
-
-  // Click animation
-  document.addEventListener('mousedown', () => {
-    document.body.classList.add('custom-cursor-click');
-  });
-
-  document.addEventListener('mouseup', () => {
-    document.body.classList.remove('custom-cursor-click');
-  });
-}
-
+  // 3. FPS Fluctuation (Simulated active render frames)
+  if (fpsDisplay) {
+    setInterval(() => {
+      // Fluctuate FPS slightly between 57 and 62 to make it look active
+      // Actual requestAnimationFrame gets locked to a solid 60 on most modern screens
+      const newFps = Math.floor(Math.random() * (62 - 57 + 1)) + 57;
+      fpsDisplay.textContent = `Render ${newFps} fps`;
+    }, 1200); // Update every 1.2 seconds for realistic fluctuation
+  }
 
 // ============================================
 // INITIAL CALL
@@ -822,3 +983,453 @@ function toggleTimeline(type) {
     if (e.key === 'Escape' && modal.classList.contains('show')) closeModal();
   });
 })();
+
+// ============================================
+// 3D CREATOR - VANILLA JS ANIMATIONS
+// ============================================
+
+// 2. Scroll-driven Text Reveal
+const scrollTextGroups = [];
+
+document.querySelectorAll('.animated-text-container').forEach(container => {
+  // Recursively wrap characters in spans, preserving HTML structure
+  function wrapCharacters(node) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const text = node.textContent;
+      const fragment = document.createDocumentFragment();
+      text.split('').forEach(char => {
+        if (char === ' ') {
+          fragment.appendChild(document.createTextNode(' '));
+        } else {
+          const span = document.createElement('span');
+          span.textContent = char;
+          span.classList.add('animated-text-char');
+          // If the text is inside a strong tag, add a special class to guarantee styling
+          if (node.parentNode && (node.parentNode.tagName === 'STRONG' || node.parentNode.tagName === 'B')) {
+            span.classList.add('highlight-char');
+          }
+          fragment.appendChild(span);
+        }
+      });
+      node.parentNode.replaceChild(fragment, node);
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+      Array.from(node.childNodes).forEach(wrapCharacters);
+    }
+  }
+  
+  Array.from(container.childNodes).forEach(wrapCharacters);
+
+  const chars = Array.from(container.querySelectorAll('.animated-text-char'));
+  scrollTextGroups.push({
+    container: container,
+    chars: chars,
+    total: chars.length
+  });
+});
+
+function handleTextScrollScrub() {
+  const windowHeight = window.innerHeight;
+  scrollTextGroups.forEach(group => {
+    const rect = group.container.getBoundingClientRect();
+    
+    // Start revealing when the element's top is 85% down the viewport
+    // Finish revealing when the element's top reaches 40% of the viewport
+    const startY = windowHeight * 0.85; 
+    const endY = windowHeight * 0.40;   
+    
+    let progress = (startY - rect.top) / (startY - endY);
+    progress = Math.max(0, Math.min(1, progress));
+    
+    const charsToReveal = Math.floor(progress * group.total);
+    
+    group.chars.forEach((char, i) => {
+      // Small math tweak to create a slight "fade" trailing edge instead of a hard cut off
+      const fadeDist = 5;
+      if (i < charsToReveal) {
+        char.style.opacity = '1';
+      } else if (i < charsToReveal + fadeDist) {
+        char.style.opacity = (1 - ((i - charsToReveal) / fadeDist)).toString();
+      } else {
+        char.style.opacity = '0.2';
+      }
+    });
+  });
+}
+
+window.addEventListener('scroll', handleTextScrollScrub);
+handleTextScrollScrub(); // trigger immediately on load
+
+// 3. Sticky Project Cards
+const stickyCards = document.querySelectorAll('.sticky-project');
+window.addEventListener('scroll', () => {
+  stickyCards.forEach((card, index) => {
+    const rect = card.getBoundingClientRect();
+    // When the card hits the top of the viewport
+    if (rect.top <= 100) { // Assuming 100px is the top sticky offset
+      card.style.top = `${100 + (index * 20)}px`;
+      // Optional scale down
+      const maxScaleDown = 0.95;
+      const progress = Math.min(1, Math.max(0, -rect.top / 500));
+      const scale = 1 - (progress * (1 - maxScaleDown));
+      card.style.transform = `scale(${scale})`;
+    } else {
+      card.style.transform = `scale(1)`;
+    }
+  });
+});
+
+// ============================================
+// NEW ANIMATIONS: Custom Cursor, Scroll Bar, Tilt, Parallax
+// ============================================
+
+
+
+// Scroll Progress Bar (Smooth LERP)
+const scrollProgress = document.getElementById('scroll-progress');
+if (scrollProgress) {
+  let targetProgress = 0;
+  let currentProgress = 0;
+  
+  window.addEventListener('scroll', () => {
+    const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+    targetProgress = (window.scrollY / totalHeight) * 100;
+  }, { passive: true });
+
+  function updateScrollProgress() {
+    // LERP formula for buttery smoothness
+    currentProgress += (targetProgress - currentProgress) * 0.1;
+    scrollProgress.style.width = `${currentProgress}%`;
+    requestAnimationFrame(updateScrollProgress);
+  }
+  
+  // Start the animation loop
+  updateScrollProgress();
+}
+
+
+
+// 3D Glass Card Tilt Effect
+const glassCards = document.querySelectorAll('.glass-card');
+glassCards.forEach(card => {
+  card.addEventListener('mousemove', (e) => {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    
+    // Calculate tilt angles (-10 to 10 degrees)
+    const tiltX = ((y - centerY) / centerY) * -10;
+    const tiltY = ((x - centerX) / centerX) * 10;
+    
+    card.classList.add('is-tilting');
+    card.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(1.02, 1.02, 1.02)`;
+    
+    // Update CSS variables for dynamic glare effect
+    card.style.setProperty('--mouse-x', `${(x / rect.width) * 100}%`);
+    card.style.setProperty('--mouse-y', `${(y / rect.height) * 100}%`);
+  });
+  
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+    setTimeout(() => {
+      card.classList.remove('is-tilting');
+    }, 300);
+  });
+});
+
+// Background Parallax
+const bgOrb = document.querySelector('.bg-orb');
+if (bgOrb) {
+  window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+    bgOrb.style.transform = `translate(-50%, -50%) translateY(${scrollY * 0.3}px)`;
+  });
+}
+
+// Premium Scroll Reveals (Staggered Cascade)
+const revealOptions = {
+  root: null,
+  rootMargin: '0px',
+  threshold: 0.15
+};
+
+let delayCounter = 0;
+let resetTimer = null;
+
+const cascadeObserver = new IntersectionObserver((entries, observer) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      // Add staggered delay based on how many elements are entering at once
+      setTimeout(() => {
+        entry.target.classList.add('is-visible');
+      }, delayCounter * 120); // 120ms stagger between elements
+      
+      delayCounter++;
+      observer.unobserve(entry.target);
+      
+      // Reset the counter if no new elements intersect for a while
+      clearTimeout(resetTimer);
+      resetTimer = setTimeout(() => {
+        delayCounter = 0;
+      }, 50);
+    }
+  });
+}, revealOptions);
+
+document.querySelectorAll('.fade-in, .fade-in-up').forEach(el => {
+  cascadeObserver.observe(el);
+});
+
+// ============================================
+// ANIME.JS COMPLEX ANIMATIONS
+// ============================================
+function playIntroAnimation() {
+  // Hide elements initially to prevent FOUC before animation
+  const navLinksList = document.querySelectorAll('.nav-link');
+  const heroHeading = document.querySelector('.hero-heading');
+  const heroTags = document.querySelectorAll('.hero-title-wrap, .hero-tagline');
+  const heroBtns = document.querySelectorAll('.hero-cta .btn');
+  const heroStats = document.querySelectorAll('.hero-stats > *');
+  const heroVisual = document.querySelector('.hero-visual');
+  const badges = document.querySelectorAll('.profile-badge');
+
+  // We temporarily disable AOS for these so Anime.js can take full control
+  const heroContent = document.querySelector('.hero-content');
+  if (heroContent) {
+    heroContent.style.opacity = '0';
+    heroContent.removeAttribute('data-aos');
+  }
+  if (heroVisual) {
+    heroVisual.style.opacity = '0';
+    heroVisual.removeAttribute('data-aos');
+  }
+
+  // Hide all animated children immediately and disable their CSS transitions to prevent lag
+  anime.set([navLinksList, heroHeading, heroTags, heroBtns, heroStats, badges], { opacity: 0, transition: 'none' });
+
+  // Create a stunning timeline
+  const tl = anime.timeline({
+    easing: 'easeOutExpo',
+    begin: function() {
+      if (heroContent) heroContent.style.opacity = '1';
+      if (heroVisual) heroVisual.style.opacity = '1';
+    },
+    complete: function() {
+      // Re-enable CSS transitions after animation finishes
+      anime.set([navLinksList, heroHeading, heroTags, heroBtns, heroStats, badges], { transition: '' });
+    }
+  });
+
+  // 1. Reveal Navbar Links (staggered drop)
+  if (navLinksList.length > 0) {
+    tl.add({
+      targets: navLinksList,
+      translateY: [-20, 0],
+      opacity: [0, 1],
+      delay: anime.stagger(20),
+      duration: 400
+    });
+  }
+
+  // 2. Reveal Hero Name (elastic scale & slide)
+  if (heroHeading) {
+    tl.add({
+      targets: heroHeading,
+      translateX: [-30, 0],
+      opacity: [0, 1],
+      duration: 500
+    }, '-=300');
+  }
+
+  // 3. Reveal Hero Tags
+  if (heroTags.length > 0) {
+    tl.add({
+      targets: heroTags,
+      translateY: [20, 0],
+      opacity: [0, 1],
+      delay: anime.stagger(40),
+      duration: 400
+    }, '-=400');
+  }
+
+  // 4. Reveal CTA Buttons
+  if (heroBtns.length > 0) {
+    tl.add({
+      targets: heroBtns,
+      scale: [0.9, 1],
+      opacity: [0, 1],
+      delay: anime.stagger(40),
+      duration: 400
+    }, '-=300');
+  }
+
+  // 5. Hero Stats Pop
+  if (heroStats.length > 0) {
+    tl.add({
+      targets: heroStats,
+      translateY: [20, 0],
+      opacity: [0, 1],
+      delay: anime.stagger(40),
+      duration: 400
+    }, '-=300');
+  }
+
+  // 6. Reveal Visual (Image and Pill)
+  if (heroVisual) {
+    tl.add({
+      targets: heroVisual,
+      scale: [0.95, 1],
+      opacity: [0, 1],
+      duration: 500,
+      easing: 'easeOutExpo'
+    }, '-=400');
+  }
+
+  // 7. Floating Badges Staggered Pop
+  if (badges.length > 0) {
+    tl.add({
+      targets: badges,
+      scale: [0, 1],
+      opacity: [0, 1],
+      delay: anime.stagger(100),
+      easing: 'spring(1, 80, 12, 0)'
+    }, '-=400');
+  }
+
+  // After intro, trigger any remaining AOS elements that might be visible
+  setTimeout(() => {
+    document.querySelectorAll('[data-aos]').forEach(el => checkAOS(el));
+  }, 1000);
+}
+
+// ============================================
+// HORIZONTAL SHOWCASE SCROLL LOGIC
+// ============================================
+const showcaseSpacer = document.querySelector('.showcase-scroll-spacer');
+const showcaseTrack = document.getElementById('showcaseTrack');
+const showcaseCards = document.querySelectorAll('.showcase-card');
+const showcaseDots = document.querySelectorAll('.showcase-dot');
+const showcaseCurrent = document.getElementById('showcaseCurrent');
+const showcaseTotal = document.getElementById('showcaseTotal');
+
+if (showcaseSpacer && showcaseTrack && showcaseCards.length > 0) {
+  let scrollTarget = 0;
+  let scrollCurrent = 0;
+  let showcaseRafId = null;
+
+  // Set total cards
+  if (showcaseTotal) {
+    showcaseTotal.textContent = String(showcaseCards.length).padStart(2, '0');
+  }
+
+  function renderShowcase() {
+    // Lerp for smooth inertia
+    scrollCurrent += (scrollTarget - scrollCurrent) * 0.1;
+    
+    // Translate the track horizontally
+    // Negative scrollCurrent means it moves left as you scroll down
+    showcaseTrack.style.transform = `translate3d(${-scrollCurrent}px, 0, 0)`;
+
+    // Determine the active card based on center screen distance
+    const trackRect = showcaseTrack.getBoundingClientRect();
+    const centerX = window.innerWidth / 2;
+    
+    let closestCardIndex = 0;
+    let minDistance = Infinity;
+
+    showcaseCards.forEach((card, index) => {
+      const rect = card.getBoundingClientRect();
+      const cardCenter = rect.left + (rect.width / 2);
+      const distance = Math.abs(centerX - cardCenter);
+      
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestCardIndex = index;
+      }
+    });
+
+    // Update active classes
+    showcaseCards.forEach((card, index) => {
+      if (index === closestCardIndex) {
+        card.classList.add('active');
+      } else {
+        card.classList.remove('active');
+      }
+    });
+
+    // Update dots
+    if (showcaseDots.length === showcaseCards.length) {
+      showcaseDots.forEach((dot, index) => {
+        if (index === closestCardIndex) {
+          dot.classList.add('active');
+        } else {
+          dot.classList.remove('active');
+        }
+      });
+    }
+
+    // Update current text
+    if (showcaseCurrent) {
+      showcaseCurrent.textContent = String(closestCardIndex + 1).padStart(2, '0');
+    }
+
+    showcaseRafId = requestAnimationFrame(renderShowcase);
+  }
+
+  window.addEventListener('scroll', () => {
+    const spacerRect = showcaseSpacer.getBoundingClientRect();
+    const scrollStart = spacerRect.top;
+    
+    // We only care when the top of the spacer hits the top of the viewport (scrollStart <= 0)
+    // and until the bottom of the spacer leaves the bottom of the viewport
+    if (scrollStart <= 0 && spacerRect.bottom >= window.innerHeight) {
+      // Calculate how far we've scrolled inside the spacer
+      const scrollProgress = -scrollStart / (spacerRect.height - window.innerHeight);
+      
+      // Calculate the maximum horizontal translation needed
+      // Track width minus viewport width (plus some padding to allow the last card to center)
+      const maxTranslateX = showcaseTrack.scrollWidth - window.innerWidth;
+      
+      scrollTarget = scrollProgress * maxTranslateX;
+    } else if (scrollStart > 0) {
+      scrollTarget = 0;
+    } else if (spacerRect.bottom < window.innerHeight) {
+      scrollTarget = showcaseTrack.scrollWidth - window.innerWidth;
+    }
+  });
+
+  // Start the animation loop
+  renderShowcase();
+}
+
+// ============================================
+// EXPERIENCE CARD SCROLL HIGHLIGHT LOGIC
+// ============================================
+const xpItems = document.querySelectorAll('.xp-item');
+if (xpItems.length > 0) {
+  function updateXpItems() {
+    const centerY = window.innerHeight / 2;
+    xpItems.forEach(item => {
+      const rect = item.getBoundingClientRect();
+      const itemCenterY = rect.top + (rect.height / 2);
+      
+      // Calculate distance from center of viewport
+      const distance = Math.abs(centerY - itemCenterY);
+      
+      // Activate if within 35% of the viewport height from the center
+      if (distance < window.innerHeight * 0.35) {
+        item.classList.add('active');
+      } else {
+        item.classList.remove('active');
+      }
+    });
+  }
+  
+  window.addEventListener('scroll', updateXpItems, { passive: true });
+  window.addEventListener('resize', updateXpItems, { passive: true });
+  
+  // Initial check on load
+  setTimeout(updateXpItems, 500);
+}
