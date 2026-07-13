@@ -222,9 +222,10 @@ window.addEventListener('load', () => {
   let W, H;
   let animId;
 
-  const maxNodesPool = 220; // Optimal balance of density and performance
-  const connectionDistance = 180; // Increased so more lines draw
-  const mouseInteractionDistance = 280; // Increased for higher sensitivity
+  let maxNodesPool = 220; // Optimal balance of density and performance
+  let isMobile = window.innerWidth <= 768;
+  let connectionDistance = isMobile ? 100 : 180; // Shorter lines on mobile
+  let mouseInteractionDistance = isMobile ? 150 : 280; // Adjusted for mobile
 
   const colorBg = '#0a0a0f';
   const colorPrimary = '#2563eb';
@@ -258,17 +259,27 @@ window.addEventListener('load', () => {
   function resize() {
     W = canvas.width = window.innerWidth;
     H = canvas.height = window.innerHeight;
+    
+    // Update these variables on resize so they're fully responsive
+    isMobile = window.innerWidth <= 768;
+    connectionDistance = isMobile ? 165 : 180;
+    mouseInteractionDistance = isMobile ? 150 : 280;
+    
     initNodes();
   }
 
   function initNodes() {
     nodes = [];
-    for (let i = 0; i < maxNodesPool; i++) {
+    const currentNodesPool = isMobile ? 160 : maxNodesPool;
+    
+    for (let i = 0; i < currentNodesPool; i++) {
       const layer = Math.random() < 0.3 ? 0 : Math.random() < 0.6 ? 1 : 2;
       let radius, speedMult;
       if (layer === 0) { radius = 0.5; speedMult = 0.1; } // Slower
       else if (layer === 1) { radius = 1.0; speedMult = 0.3; }
       else { radius = 1.5; speedMult = 0.5; }
+
+      if (isMobile) speedMult *= 0.4; // Significantly slower on mobile
 
       nodes.push({
         x: Math.random() * W,
@@ -1433,3 +1444,111 @@ if (xpItems.length > 0) {
   // Initial check on load
   setTimeout(updateXpItems, 500);
 }
+
+// ============================================
+// THEME TOGGLE LOGIC
+// ============================================
+const themeToggleBtn = document.getElementById('theme-toggle');
+if (themeToggleBtn) {
+  // Check for saved theme preference or default to dark
+  const currentTheme = localStorage.getItem('theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', currentTheme);
+
+  themeToggleBtn.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme');
+    const targetTheme = current === 'dark' ? 'light' : 'dark';
+    
+    document.documentElement.setAttribute('data-theme', targetTheme);
+    localStorage.setItem('theme', targetTheme);
+    
+    // Animate icon switch
+    anime({
+      targets: themeToggleBtn,
+      scale: [0.8, 1.1, 1],
+      rotate: '1turn',
+      duration: 300,
+      easing: 'easeOutBack'
+    });
+  });
+}
+
+// ============================================
+// ANIME.JS ADVANCED ANIMATIONS
+// ============================================
+document.addEventListener('DOMContentLoaded', () => {
+  // 1. Text Reveal Animation on Hero
+  const nameMain = document.querySelector('.name-main');
+  if (nameMain) {
+    nameMain.innerHTML = nameMain.textContent.replace(/\S/g, "<span class='letter' style='display:inline-block;'>$&</span>");
+    anime.timeline({loop: false})
+      .add({
+        targets: '.name-main .letter',
+        translateY: [50, 0],
+        translateZ: 0,
+        opacity: [0, 1],
+        easing: "easeOutExpo",
+        duration: 1200,
+        delay: (el, i) => 800 + 30 * i // Start after loader finishes
+      });
+  }
+
+  // 2. Parallax Mouse Move Effect on BG Orbs
+  const bgOrb = document.querySelector('.bg-orb');
+  const heroGlows = document.querySelectorAll('.hero-glow');
+  
+  window.addEventListener('mousemove', (e) => {
+    const mouseX = e.clientX / window.innerWidth;
+    const mouseY = e.clientY / window.innerHeight;
+    
+    if (bgOrb) {
+      bgOrb.style.transform = `translate(${mouseX * -30}px, ${mouseY * -30}px)`;
+    }
+    
+    heroGlows.forEach((glow, index) => {
+      const depth = index === 0 ? 40 : -40;
+      glow.style.transform = `translate(${mouseX * depth}px, ${mouseY * depth}px)`;
+    });
+  });
+
+  // 3. Staggered Entrance for Cards on Scroll
+  const observerOptions = {
+    root: null,
+    rootMargin: '0px',
+    threshold: 0.1
+  };
+  
+  const staggerObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const target = entry.target;
+        if (target.classList.contains('skills-grid')) {
+          anime({
+            targets: '.skill-card',
+            translateY: [20, 0],
+            opacity: [0, 1],
+            easing: 'easeOutQuart',
+            duration: 400,
+            delay: anime.stagger(40)
+          });
+          observer.unobserve(target);
+        } else if (target.classList.contains('stats-grid')) {
+          anime({
+            targets: '.stat-card',
+            scale: [0.95, 1],
+            opacity: [0, 1],
+            easing: 'easeOutBack',
+            duration: 500,
+            delay: anime.stagger(50)
+          });
+          observer.unobserve(target);
+        }
+      }
+    });
+  }, observerOptions);
+
+  const skillsGrid = document.querySelector('.skills-grid');
+  if (skillsGrid) staggerObserver.observe(skillsGrid);
+  
+  const statsGrid = document.querySelector('.stats-grid');
+  if (statsGrid) staggerObserver.observe(statsGrid);
+});
