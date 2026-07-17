@@ -23,6 +23,18 @@ Check out the live portfolio here: **[https://himanshu-singh11.github.io/Portfol
 - **Local Server**: Python (Custom `http.server` with cache busting for development)
 - **Icons**: FontAwesome & Custom SVGs
 
+## 📁 Project Structure
+
+```text
+Portfolio/
+├── index.html       # Main HTML structure and content
+├── styles.css       # All custom styling, layout, and animations
+├── script.js        # Scroll triggers, particle generation, and interactivity
+├── server.py        # Python local server (no-cache setup for dev)
+├── assets/          # Directory for all images, logos, and media
+└── README.md        # Project documentation
+```
+
 ## 🚀 Local Development Workflow
 
 To view this portfolio on your local machine and make edits:
@@ -47,18 +59,6 @@ To view this portfolio on your local machine and make edits:
    ```
    http://localhost:3000
    ```
-
-## 📁 Project Structure
-
-```text
-Portfolio/
-├── index.html       # Main HTML structure and content
-├── styles.css       # All custom styling, layout, and animations
-├── script.js        # Scroll triggers, particle generation, and interactivity
-├── server.py        # Python local server (no-cache setup for dev)
-├── assets/          # Directory for all images, logos, and media
-└── README.md        # Project documentation
-```
 
 ## 📬 Contact
 - **Author**: Himanshu Singh
