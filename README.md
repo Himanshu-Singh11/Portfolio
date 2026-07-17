@@ -1,10 +1,13 @@
-# Himanshu Singh - Personal Portfolio
+# Himanshu Singh - Personal Portfolio 🚀
 
 ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
 
 A modern, highly interactive, and fully responsive personal developer portfolio website. Designed to showcase projects, skills, and professional experience with a focus on smooth animations, dynamic layouts, and a clean, engaging user interface.
+
+## 🌐 Live Demo
+Check out the live portfolio here: **[https://himanshu-singh11.github.io/Portfolio/](https://himanshu-singh11.github.io/Portfolio/)**
 
 ## 🌟 Key Features
 - **Modern UI/UX**: Crafted with custom CSS variables, sleek dark mode aesthetics, and glassmorphism elements.
@@ -56,9 +59,6 @@ Portfolio/
 ├── assets/          # Directory for all images, logos, and media
 └── README.md        # Project documentation
 ```
-
-## 🌐 Live Demo
-*(You can add the link to your live hosted version here once deployed via Vercel, GitHub Pages, or Netlify)*
 
 ## 📬 Contact
 - **Author**: Himanshu Singh
