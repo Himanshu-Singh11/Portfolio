@@ -17,11 +17,14 @@ Check out the live portfolio here: **[https://himanshu-singh11.github.io/Portfol
 - **Lightweight & Fast**: Built without heavy frontend frameworks—just pure HTML, CSS, and JS—meaning near-instant load times.
 
 ## 💻 Tech Stack
-- **Structure**: HTML5
-- **Styling**: Vanilla CSS3 (Custom Variables, Flexbox, CSS Grid, Media Queries)
-- **Logic & Interactions**: Vanilla JavaScript (ES6+)
-- **Local Server**: Python (Custom `http.server` with cache busting for development)
-- **Icons**: FontAwesome & Custom SVGs
+
+| Category | Technology |
+| :--- | :--- |
+| **Structure** | HTML5 |
+| **Styling** | Vanilla CSS3 (Custom Variables, Flexbox, CSS Grid, Media Queries) |
+| **Logic & Interactions** | Vanilla JavaScript (ES6+) |
+| **Local Server** | Python (Custom `http.server` with cache busting for development) |
+| **Icons** | FontAwesome & Custom SVGs |
 
 ## 📁 Project Structure
 
