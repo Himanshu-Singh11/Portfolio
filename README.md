@@ -7,11 +7,13 @@
 A modern, highly interactive, and fully responsive personal developer portfolio website. Designed to showcase projects, skills, and professional experience with a focus on smooth animations, dynamic layouts, and a clean, engaging user interface.
 
 ## 🌐 Live Demo
+
 Check out the live portfolio here: **[https://himanshu-singh11.github.io/Portfolio/](https://himanshu-singh11.github.io/Portfolio/)**
                                    
 Check out the live portfolio here: **[https://himanshusingh-11.netlify.app/](https://himanshusingh-11.netlify.app/)**
 
 ## 🌟 Key Features
+
 - **Modern UI/UX**: Crafted with custom CSS variables, sleek dark mode aesthetics, and glassmorphism elements.
 - **Scroll Animations**: Smooth, performant scrolling effects, horizontal carousels, and fade-ins triggered entirely via Vanilla JavaScript.
 - **Fully Responsive**: Carefully optimized for all screen sizes (Desktop, Tablet, and Mobile).
