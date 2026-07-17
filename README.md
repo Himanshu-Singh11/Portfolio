@@ -8,7 +8,7 @@ A modern, highly interactive, and fully responsive personal developer portfolio 
 
 ## 🌐 Live Demo
 Check out the live portfolio here: **[https://himanshu-singh11.github.io/Portfolio/](https://himanshu-singh11.github.io/Portfolio/)**
-                                   **[himanshusingh-11.netlify.app/]**
+                                   **[https://himanshusingh-11.netlify.app/](https://himanshusingh-11.netlify.app/)**
 
 ## 🌟 Key Features
 - **Modern UI/UX**: Crafted with custom CSS variables, sleek dark mode aesthetics, and glassmorphism elements.
